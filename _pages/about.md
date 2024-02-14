@@ -25,5 +25,5 @@ Hello! I received my PhD degree (supervised by Prof. Ko Nishino and Prof. Shohei
 
 Feel free to reach out at **mengyu.j.kuo@gmail.com**
 
-[CV[03/2023]](assets/pdf/jennifer_cv.pdf)
+[CV[03/2023]](../assets/pdf/jennifer_cv.pdf)
 
