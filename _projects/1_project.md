@@ -1,11 +1,13 @@
 ---
 layout: page
-title: Royal Rumble – Outdoor Adventure Game Quest (2015)
-description: Led a one-day outdoor game event for international students by organizing teams, creating puzzles/props, designing a scoring system, assigning characters, and enforcing rules.
-img: assets/img/events/royal_rumble/royal_rumble_1.jpg
-importance: 3
-category: fun
+title: something
+description: a project with a background image
+img: assets/img/12.jpg
+importance: 1
+category: work
+related_publications: false
 ---
+
 
 
 Every project has a beautiful feature showcase page.
@@ -44,8 +46,8 @@ To give your project a background in the portfolio page, just add the img tag to
     This image can also have a caption. It's like magic.
 </div>
 
-You can also put regular text between your rows of images.
-Say you wanted to write a little bit about your project before you posted the rest of the images.
+You can also put regular text between your rows of images, even citations {% cite einstein1950meaning %}.
+Say you wanted to write a bit about your project before you posted the rest of the images.
 You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
 
 <div class="row justify-content-sm-center">
@@ -60,7 +62,7 @@ You describe how you toiled, sweated, _bled_ for your project, and then... you r
     You can also have artistically styled 2/3 + 1/3 images, like these.
 </div>
 
-The code is simple. lol
+The code is simple.
 Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
 To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
 Here's the code for the last row of images above:
