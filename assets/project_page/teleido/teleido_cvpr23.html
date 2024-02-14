@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  
+<head>
+    <!-- Meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Page info -->
+    <meta http-equiv="author" content="Meng-Yu Jennifer Kuo" />
+    <!--<link rel="icon" type="image/png" href="assets/rl-logo.png" />-->
+    
+    <!-- HTML Meta Tags -->
+    <title>Teleidoscopic Imaging System for Microscale 3D Shape Reconstruction</title>
+    <meta name="description" content="Teleidoscopic Imaging System for Microscale 3D Shape Reconstruction">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>Teleidoscopic Imaging System for Microscale 3D Shape Reconstruction</title>
+  </head>
+
+  <body>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <div class="container-fluid my-5 mx-auto" style="max-width: 840px;">
+        <div class="row">
+            <h1 class="display-6 text-center">
+                <b>Teleidoscopic Imaging System</b> </br> for Microscale 3D Shape Reconstruction </br>
+            </h1>
+        </div>
+
+        <div class="row mt-2">
+            <div class="fs-4 fw-light text-center text-secondary">
+                CVPR 2023
+            </div>
+        </div>
+
+        <div class="row text-center mt-3 mx-auto" style="max-width: 640px;">
+            <div class="col-md-4">
+                <a href="https://scholar.google.com/citations?user=4OCOer8AAAAJ&hl=ja">
+                    Ryo Kawahara
+                </a><sup>1</sup>
+            </div>
+            <div class="col-md-4">
+                <a href="https://myjk1992.github.io/">
+                    Meng-Yu Jennifer Kuo
+                </a><sup>2</sup>
+            </div>
+            <div class="col-md-4">
+                <a href="https://shohei.nobuhara.org/index.en.html">
+                    Shohei Nobuhara
+                </a><sup>3</sup>
+            </div>
+        </div>
+
+        <div class="row text-center mt-3 mx-auto">
+            <div class="col-md-5"><sup>1</sup>Kyushu Institute of Technology</div>
+            <div class="col-md-3"><sup>2</sup>University of Minnesota</div>
+            <div class="col-md-3"><sup>3</sup>Kyoto University</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mt-5">
+                <image src="teaser.png" width="100%"></image>
+                <!--<video width="100%" autoplay loop muted controls>
+                    <source src="assets/teaser.png" type="image/png">
+                </video>
+                <p class="text-center">blabla</p>-->
+            </div>
+        </div>
+
+        <div class="my-5">
+            <h2>Abstract</h2>
+            <p class="text-justidy mt-3">
+                This paper proposes a practical method of microscale 3D shape capturing by a teleidoscopic imaging system. The
+                main challenge in microscale 3D shape reconstruction is
+                to capture the target from multiple viewpoints with a large
+                enough depth-of-field. Our idea is to employ a teleidoscopic
+                measurement system consisting of three planar mirrors and
+                monocentric lens. The planar mirrors virtually define multiple viewpoints by multiple reflections, and the monocentric lens realizes a high magnification with less blurry and
+                surround view even in closeup imaging. Our contributions
+                include, a structured ray-pixel camera model which handles refractive and reflective projection rays efficiently, analytical evaluations of depth of field of our teleidoscopic
+                imaging system, and a practical calibration algorithm of
+                the teleidoscopic imaging system. Evaluations with real images prove the concept of our measurement system.
+            </p>
+        </div>
+
+        <div class="my-5">
+            <h2>Video</h2>
+            <div class="text-center mt-3">
+                <div style="position:relative;padding-top:56.25%;">
+                    <iframe src="https://www.youtube.com/embed/n30mLo7V0Rw" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="my-5">
+            <h2>Resources</h2>
+            <div class="row mt-4">
+                <div class="col-md-12 text-center">
+                    <ul class="nav nav-tabs nav-justified">
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://openaccess.thecvf.com/content/CVPR2023/papers/Kawahara_Teleidoscopic_Imaging_System_for_Microscale_3D_Shape_Reconstruction_CVPR_2023_paper.pdf">
+                            <image src="paper_snapshot.png" height="120px">
+                                <p class="lead">paper</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://drive.google.com/file/d/1RD7_hQN9j0nC4VDiJgryaTHiE1lB0zNP/view?usp=share_link">
+                            <image src="poster_snapshot.png" height="120px">
+                                <p class="lead">poster</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://youtu.be/xYic6i_XodU">
+                            <image src="../assets/youtube_icon.png" height="120px">
+                                <p class="lead">presentation</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <!--<a class="nav-link" href="">-->
+                            <image src="../assets/github-logo.png" height="120px">
+                                <p class="lead">code & data (available upon request)</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-5">
+            <h2>Citation</h2>
+            <p>If you found this work useful, please consider citing us: </p>
+            <div class="col-md-12 mt-3">
+
+<pre>
+    @InProceedings{Kawahara_2023_CVPR,
+        author    = {Kawahara, Ryo and Kuo, Meng-Yu Jennifer and Nobuhara, Shohei},
+        title     = {Teleidoscopic Imaging System for Microscale 3D Shape Reconstruction},
+        booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+        month     = {June},
+        year      = {2023},
+        pages     = {20813-20822}
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class="my-5">
+            <h2>Acknowledgement</h2>
+            <p>
+                This work is in part supported by JSPS KAKENHI JP22K17914.
+            </p>
+        </div>
+
+    </div>
+
+  </body>
+</html>

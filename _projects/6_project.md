@@ -1,11 +1,13 @@
 ---
 layout: page
-title: project 6
-description: a project with no image
-img:
+title: Japanese Culture Seminar (2016)
+description: Coordinated a seminar on Japanese Ikebana for international students in Kyoto, Japan.
+img: assets/img/events/ikebana/ikebana_1.png
 importance: 4
 category: fun
 ---
+
+Coordinated a seminar on Japanese Ikebana for international students in Kyoto, Japan, including an Ikebana teacher who enabled participants to create their own arrangements, by scheduling/leading meetings, organizing staff, and sourcing the teacher.
 
 Every project has a beautiful feature showcase page.
 It's easy to include images in a flexible 3-column grid format.

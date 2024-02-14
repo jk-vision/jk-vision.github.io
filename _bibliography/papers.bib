@@ -3,83 +3,81 @@
 
 @string{aps = {American Physical Society,}}
 
-@book{einstein1956investigations,
+@inproceedings{kawahara2023teleidoscopic,
+  abbr={CVPR},
   bibtex_show={true},
-  title={Investigations on the Theory of the Brownian Movement},
-  author={Einstein, Albert},
-  year={1956},
-  publisher={Courier Corporation},
-  preview={brownian-motion.gif}
+  title={Teleidoscopic Imaging System for Microscale 3D Shape Reconstruction},
+  author={Kawahara, Ryo and Kuo, Meng-Yu Jennifer and Nobuhara, Shohei},
+  abstract={This paper proposes a practical method of microscale 3D shape capturing by a teleidoscopic imaging system.
+The main challenge in microscale 3D shape reconstruction is to capture the target from multiple viewpoints with a large enough depth-of-field.
+Our idea is to employ a teleidoscopic measurement system consisting of three planar mirrors and monocentric lens. The planar mirrors virtually define multiple viewpoints by multiple reflections, and the monocentric lens realizes a high magnification with less blurry and surround view even in closeup imaging. Our contributions include, a structured ray-pixel camera model which handles refractive and reflective projection rays efficiently, analytical evaluations of depth of field of our teleidoscopic imaging system, and a practical calibration algorithm of the teleidoscopic imaging system. Evaluations with real images prove the concept of our measurement system.},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={20813--20822},
+  year={2023},
+  selected={true},
+  pdf={https://openaccess.thecvf.com/content/CVPR2023/papers/Kawahara_Teleidoscopic_Imaging_System_for_Microscale_3D_Shape_Reconstruction_CVPR_2023_paper.pdf},
 }
+#  mtl= {project_page/teleido/teleido_cvpr23.html}
 
-@article{einstein1950meaning,
-  abbr={AJP},
+@article{kuo2021non,
+  abbr={TPAMI},
   bibtex_show={true},
-  title={The meaning of relativity},
-  author={Einstein, Albert and Taub, AH},
-  journal={American Journal of Physics},
-  volume={18},
-  number={6},
-  pages={403--404},
-  year={1950},
-  publisher={American Association of Physics Teachers}
+  title={Non-Rigid Shape From Water},
+  author={Kuo, Meng-Yu Jennifer and Kawahara, Ryo and Nobuhara, Shohei and Nishino, Ko},
+  abstract={We introduce a novel 3D sensing method for recovering a consistent, dense 3D shape of a dynamic, non-rigid object in water. The method reconstructs a complete (or fuller) 3D surface of the target object in a canonical frame (e.g., rest shape) as it freely deforms and moves between frames by estimating underwater 3D scene flow and using it to integrate per-frame depth estimates recovered from two near-infrared observations. The reconstructed shape is refined in the course of this global non-rigid shape recovery by leveraging both geometric and radiometric constraints. We implement our method with a single camera and a light source without the orthographic assumption on either by deriving a practical calibration method that estimates the point source position with respect to the camera. Our reconstruction method also accounts for scattering by water. We prototype a video-rate imaging system and show 3D shape reconstruction results on a number of real-world static, deformable, and dynamic objects and creatures in real-world water. The results demonstrate the effectiveness of the method in recovering complete shapes of complex, non-rigid objects in water, which opens new avenues of application for underwater 3D sensing in the sub-meter range.},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume={43},
+  number={7},
+  pages={2220--2232},
+  year={2021},
+  publisher={IEEE},
+  selected={true},
+  pdf={https://ieeexplore.ieee.org/document/9416180},
 }
 
-@article{PhysRev.47.777,
-  abbr={PhysRev},
-  title={Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?},
-  author={Einstein, A. and Podolsky, B. and Rosen, N.},
-  abstract={In a complete theory there is an element corresponding to each element of reality. A sufficient condition for the reality of a physical quantity is the possibility of predicting it with certainty, without disturbing the system. In quantum mechanics in the case of two physical quantities described by non-commuting operators, the knowledge of one precludes the knowledge of the other. Then either (1) the description of reality given by the wave function in quantum mechanics is not complete or (2) these two quantities cannot have simultaneous reality. Consideration of the problem of making predictions concerning a system on the basis of measurements made on another system that had previously interacted with it leads to the result that if (1) is false then (2) is also false. One is thus led to conclude that the description of reality as given by a wave function is not complete.},
-  journal={Phys. Rev.},
-  volume={47},
-  issue={10},
-  pages={777--780},
-  numpages={0},
-  year={1935},
-  month={May},
-  publisher=aps,
-  doi={10.1103/PhysRev.47.777},
-  url={http://link.aps.org/doi/10.1103/PhysRev.47.777},
-  html={https://journals.aps.org/pr/abstract/10.1103/PhysRev.47.777},
-  pdf={example_pdf.pdf},
-  altmetric={248277},
-  dimensions={true},
-  google_scholar_id={qyhmnyLat1gC},
-  selected={true}
-}
+@article{kuo2021surface,
+      abbr={TPAMI},
+      bibtex_show={true},
+      title={Surface Normals and Shape From Water},
+      author={Kuo, Meng-Yu Jennifer and Murai, Satoshi and Kawahara, Ryo and Nobuhara, Shohei and Nishino, Ko},
+      abstract={In this paper, we introduce a novel method for reconstructing surface normals and depth of dynamic objects in water. Past shape recovery methods have leveraged various visual cues for estimating shape (e.g., depth) or surface normals. Methods that estimate both compute one from the other. We show that these two geometric surface properties can be simultaneously recovered for each pixel when the object is observed underwater. Our key idea is to leverage multi-wavelength near-infrared light absorption along different underwater light paths in conjunction with surface shading. 
+Our method can handle both Lambertian and non-Lambertian surfaces.
+We derive a principled theory for this surface normals and shape from water method and a practical calibration method for determining its imaging parameters values. 
+By construction, the method can be implemented as a one-shot imaging system. We prototype both an off-line and a video-rate imaging system and demonstrate the effectiveness of the method on a number of real-world static and dynamic objects. The results show that the method can recover intricate surface features that are otherwise inaccessible.},
+      journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+      volume={44},
+      number={12},
+      pages={9150--9162},
+      year={2021},
+      publisher={IEEE},
+      selected={true},
+      pdf={https://ieeexplore.ieee.org/document/9583771},
+    }
 
-@article{einstein1905molekularkinetischen,
-  title={{\"U}ber die von der molekularkinetischen Theorie der W{\"a}rme geforderte Bewegung von in ruhenden Fl{\"u}ssigkeiten suspendierten Teilchen},
-  author={Einstein, A.},
-  journal={Annalen der physik},
-  volume={322},
-  number={8},
-  pages={549--560},
-  year={1905},
-  publisher={Wiley Online Library}
-}
 
-@article{einstein1905movement,
-  abbr={Ann. Phys.},
-  title={Un the movement of small particles suspended in statiunary liquids required by the molecular-kinetic theory 0f heat},
-  author={Einstein, A.},
-  journal={Ann. Phys.},
-  volume={17},
-  pages={549--560},
-  year={1905}
-}
-
-@article{einstein1905electrodynamics,
-  title={On the electrodynamics of moving bodies},
-  author={Einstein, A.},
-  year={1905}
-}
-
-@book{przibram1967letters,
+@inproceedings{kawahara2023polarimetric,
   bibtex_show={true},
-  title={Letters on wave mechanics},
-  author={Einstein, Albert and Schrödinger, Erwin and Planck, Max and Lorentz, Hendrik Antoon and Przibram, Karl},
-  year={1967},
-  publisher={Vision},
-  preview={wave-mechanics.gif}
+  title={Polarimetric Underwater Stereo},
+  author={Kawahara, Ryo and Kuo, Meng-Yu Jennifer and Okabe, Takahiro},
+  abtract = {We propose a novel method for recovering per-pixel surface normals and depth of objects in water.
+We show that these two geometric surface properties of each pixel can be reconstructed simultaneously when observing an object underwater, regardless of its texture.
+Our key idea is to leverage polarized rays along different underwater light paths while considering perspective projection and refraction. 
+We implement our method using an off-the-shelf polarization camera and an LCD, and derive a practical calibration method to determine the values of its imaging parameters using a single planar mirror. Results on a number of real-world objects in water demonstrate the effectiveness of our method.},
+  booktitle={Scandinavian Conference on Image Analysis},
+  pages={534--550},
+  year={2023},
+  organization={Springer},
+  pdf = {https://link.springer.com/chapter/10.1007/978-3-031-31438-4_35},
+  preview = {pus.png}
+}
+
+
+@inproceedings{kawahara2020appearance,
+  abbr={WACV},
+  bibtex_show={true},
+  title={Appearance and Shape from Water Reflection},
+  author={Kawahara, Ryo and Kuo, Meng-Yu and Nobuhara, Shohei and Nishino, Ko},
+  booktitle={Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision},
+  pages={128--136},
+  year={2020}
 }
