@@ -13,7 +13,7 @@ profile:
   #  <p>123 your address street</p>
   #  <p>Your City, State 12345</p>
 
-news: false # includes a list of news items
+news: true # includes a list of news items
 latest_posts: false # includes a list of the newest posts
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: false # includes social icons at the bottom of the page
@@ -23,7 +23,7 @@ Hello! I received my PhD degree (supervised by Prof. Ko Nishino and Prof. Shohei
 
 **Research Interests**: Computer Vision, Computational Photography, Physics-based Vision
 
-Feel free to reach out at **mengyu.j.kuo@gmail.com**
+:earth_americas: Feel free to reach out at **mengyu.j.kuo@gmail.com**
 
 [CV[03/2023]](../assets/pdf/jennifer_cv.pdf)
 
