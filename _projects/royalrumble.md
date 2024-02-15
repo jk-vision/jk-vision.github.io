@@ -2,7 +2,7 @@
 layout: page
 title: Royal Rumble – Outdoor Adventure Game Quest (2015)
 description: Led a one-day outdoor game event for international students by organizing teams, creating puzzles/props, designing a scoring system, assigning characters, and enforcing rules.
-img: assets/img/events/royal_rumble/royal_rumble_1.jpg
+img: assets/img/events/royal_rumble/royal_rumble_0.jpg
 importance: 3
 category: event
 ---
