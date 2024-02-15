@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Life-Size Monopoly – An Interactive Adventure (2011)
-description: Hosted a one-day, live, Monopoly-like game, including a life-sized map, by single-handedly designing the storyline, creating props, and leading staff.
+description: Hosted a one-day outdoor, live, Monopoly-like game, including a life-sized map, by single-handedly designing the storyline, creating props, and leading staff.
 img: assets/img/events/monopoly/monopoly_1.jpg
 importance: 3
 category: event

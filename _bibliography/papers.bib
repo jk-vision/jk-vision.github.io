@@ -75,8 +75,23 @@ We implement our method using an off-the-shelf polarization camera and an LCD, a
   abbr={WACV},
   bibtex_show={true},
   title={Appearance and Shape from Water Reflection},
+  abstract = {This paper introduces single-image geometric and appearance reconstruction from water reflection photography, i.e., images capturing direct and water-reflected real-world scenes. Water reflection offers an additional viewpoint to the direct sight, collectively forming a stereo pair. The water-reflected scene, however, includes internally scattered and reflected environmental illumination in addition to the scene radiance, which precludes direct stereo matching. We derive a principled iterative method that disentangles this scene radiometry and geometry for reconstructing 3D scene structure as well as its high-dynamic range appearance. In the presence of waves, we simultaneously recover the wave geometry as surface normal perturbations of the water surface. Most important, we show that the water reflection enables calibration of the camera. In other words, for the first time, we show that capturing a direct and water-reflected scene in a single exposure forms a self-calibrating HDR catadioptric stereo camera. We demonstrate our method on a number of images taken in the wild. The results demonstrate a new means for leveraging this accidental catadioptric camera.},
   author={Kawahara, Ryo and Kuo, Meng-Yu and Nobuhara, Shohei and Nishino, Ko},
   booktitle={Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision},
   pages={128--136},
+  pdf = {https://openaccess.thecvf.com/content_WACV_2020/papers/Kawahara_Appearance_and_Shape_from_Water_Reflection_WACV_2020_paper.pdf},
   year={2020}
+}
+
+@article{kuo2024human,
+  title={Learning 3D Human UV with Loose Clothing from Monocular Video.},
+  author={},
+  abstract = {We introduce a novel method for recovering a consistent and dense 3D geometry and appearance of a dressed person from a monocular video. Existing methods mainly focus on tight clothing and recover human geometry as a single representation. 
+Our key idea is to regress the holistic 3D shape and appearance as a canonical displacement and albedo maps in the UV space, while fitting the visual observations across frames. 
+Specifically, we represent the naked body shape by a UV-space SMPL model, and represent the other geometric details, including the clothing, as a shape displacement UV map. 
+We obtain the temporally coherent overall shape by leveraging a differential mask loss and a pose regularization. 
+The surface details in UV space are jointly learned in the course of non-rigid deformation with the differentiable neural rendering. Meanwhile, the skinning deformation in the garment region is updated periodically to adjust its residual non-rigid motion in each frame. We additionally enforce the temporal consistency of surface details by utilizing the optical flow. Experimental results on monocular videos demonstrate the effectiveness of the method.
+Our UV representation allows for simple and accurate dense 3D correspondence tracking of a person wearing loose clothing. We believe our work would benefit applications including VR/AR content creation.},
+  year={2024},
+  preview={human_uv3d.png}
 }
