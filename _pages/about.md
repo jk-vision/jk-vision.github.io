@@ -19,7 +19,7 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: false # includes social icons at the bottom of the page
 ---
 
-Hello! I received my PhD degree (supervised by Prof. Ko Nishino and Prof. Shohei Nobuhara) from the [Computer Vision Lab](https://vision.ist.i.kyoto-u.ac.jp/) at [Kyoto University](https://www.kyoto-u.ac.jp/en/), Japan. I am a postdoc (with Prof. Hyun-Soo Park) at the University of Minnesota.
+Hello! I received my PhD degree (supervised by Prof. Ko Nishino and Prof. Shohei Nobuhara) from the [Computer Vision Lab](https://vision.ist.i.kyoto-u.ac.jp/) at [Kyoto University](https://www.kyoto-u.ac.jp/en/), Japan. I was a postdoc (with Prof. Hyun-Soo Park) at the University of Minnesota.
 
 **Research Interests**: Computer Vision, Computational Photography, Physics-based Vision
 
