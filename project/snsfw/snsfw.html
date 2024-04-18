@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  
+<head>
+    <!-- Meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Page info -->
+    <meta http-equiv="author" content="Meng-Yu Jennifer Kuo" />
+    <!--<link rel="icon" type="image/png" href="assets/rl-logo.png" />-->
+    
+    <!-- HTML Meta Tags -->
+    <title>Surface Normals and Shape From Water</title>
+    <meta name="description" content="Surface Normals and Shape From Water">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>Surface Normals and Shape From Water</title>
+  </head>
+
+  <body>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <div class="container-fluid my-5 mx-auto" style="max-width: 840px;">
+        <div class="row">
+            <h1 class="display-6 text-center">
+                <b>Surface Normals and Shape From Water &#128032;</b> 
+            </h1>
+        </div>
+
+        <div class="row mt-2">
+            <div class="fs-4 fw-light text-center text-secondary">
+                ICCV 2019 (Oral)/TPAMI 2021
+            </div>
+        </div>
+
+        <div class="row text-center mt-3 mx-auto" style="max-width: 640px;">
+            <div class="col-md-4">
+                <a href="https://myjk1992.github.io/">
+                    Meng-Yu Jennifer Kuo
+                 </a>
+            </div>
+            <div class="col-md-4">
+                <a>
+                    Satoshi Murai
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a>
+                    Ryo Kawahara
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a>
+                    Shohei Nobuhara
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a>
+                    Ko Nishino
+                </a>
+            </div>
+        </div>
+
+        <div class="row text-center mt-3 mx-auto">
+            <div>Kyoto University, Kyoto, Japan &#9961;</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mt-5">
+                <!-- <image src="assets/teaser.png" width="100%"></image> -->
+                <video autoplay loop muted playsinline width="100%">
+                <source src="../../demo/snsfw_fish.mp4" type="video/mp4">
+                </video>
+                <p class="text-center">Recovered surface normals and 3D shape of the swimming fish</p>
+            </div>
+        </div>
+
+        <div class="my-5">
+            <h2>Abstract</h2>
+            <p class="text-justidy mt-3">
+                In this paper, we introduce a novel method for reconstructing surface normals and depth of dynamic objects in water. Past shape recovery methods have leveraged various visual cues for estimating shape (e.g., depth) or surface normals. Methods that estimate both compute one from the other. We show that these two geometric surface properties can be simultaneously recovered for each pixel when the object is observed underwater. Our key idea is to leverage multi-wavelength near-infrared light absorption along different underwater light paths in conjunction with surface shading. Our method can handle both Lambertian and non-Lambertian surfaces. We derive a principled theory for this surface normals and shape from water method and a practical calibration method for determining its imaging parameters values. By construction, the method can be implemented as a one-shot imaging system. We prototype both an off-line and a video-rate imaging system and demonstrate the effectiveness of the method on a number of real-world static and dynamic objects. The results show that the method can recover intricate surface features that are otherwise inaccessible.
+            </p>
+        </div>
+
+        <div class="my-5">
+            <h2>Video</h2>
+            <div class="text-center mt-3">
+                <div style="position:relative;padding-top:56.25%;">
+                    <iframe src="https://www.youtube.com/embed/485up02S5UE" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="my-5">
+            <h2>Resources</h2>
+            <div class="row mt-4">
+                <div class="col-md-12 text-center">
+                    <ul class="nav nav-tabs nav-justified">
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://ieeexplore.ieee.org/document/9583771">
+                            <image src="paper_snapshot.png" height="120px">
+                                <p class="lead">paper</p>
+                            </a>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a class="nav-link" href="https://drive.google.com/file/d/1RD7_hQN9j0nC4VDiJgryaTHiE1lB0zNP/view?usp=share_link">
+                            <image src="assets/poster_snapshot.png" height="120px">
+                                <p class="lead">poster</p>
+                            </a>
+                        </li> -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://www.youtube.com/watch?v=IWkSJQ6xxdc&feature=youtu.be&t=1956">
+                            <image src="../assets/youtube_icon.png" height="120px">
+                                <p class="lead">presentation</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="">
+                            <image src="../assets/github-logo.png" height="120px">
+                                <p class="lead">code & data (available upon request)</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-5">
+            <h2>Citation</h2>
+            <p>If you found this work useful, please consider citing us: </p>
+            <div class="col-md-12 mt-3">
+
+<pre>
+    @article{kuo2021surface,
+        title={Surface normals and shape from water},
+        author={Kuo, Meng-Yu Jennifer and Murai, Satoshi and Kawahara, Ryo and Nobuhara, Shohei and Nishino, Ko},
+        journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+        volume={44},
+        number={12},
+        pages={9150--9162},
+        year={2021},
+        publisher={IEEE}
+      }
+}</pre>
+            </div>
+        </div>
+
+        <div class="my-5">
+            <h2>Acknowledgement</h2>
+            <p>
+                This work was in part supported by JSPS KAKENHI 15H05918, 17K20143, 18K19815, 26240023, and 20H05951, and JST grant number JPMJCR20G7.
+            </p>
+        </div>
+
+    </div>
+
+  </body>
+</html>
