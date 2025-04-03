@@ -184,7 +184,21 @@
     gap: 1rem;
   }
 }
-    
+
+.intro-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+@media (max-width: 768px) {
+  .intro-flex {
+    flex-direction: column;
+    gap: 1rem;
+    flex-wrap: nowrap;
+  }
+}
   </style>
 <style>
     .lang-toggle {
@@ -250,7 +264,8 @@
     <section class="lang-ja">
   <div class="intro">
     <div class="intro-images">
-      <div style="display: flex; align-items: center; gap: 2rem; justify-content: center;">
+      <div class="intro-flex">
+      <!-- <div style="display: flex; align-items: center; gap: 2rem; justify-content: center;"> -->
         <div style="display: flex; flex-direction: column; align-items: center;">
           <img class="profile" src="profile.png" alt="Instructor Profile Picture">
           <p class="name" style="margin-top: 0.5rem; font-weight: bold; font-size: 1.1rem;">Meng-Yu Jennifer Kuo</p>
@@ -270,7 +285,8 @@
 <section class="lang-en">
   <div class="intro">
     <div class="intro-images">
-      <div style="display: flex; align-items: center; gap: 2rem; justify-content: center;">
+      <div class="intro-flex">
+      <!-- <div style="display: flex; align-items: center; gap: 2rem; justify-content: center;"> -->
         <div style="display: flex; flex-direction: column; align-items: center;">
           <img class="profile" src="profile.png" alt="Instructor Profile Picture">
           <p class="name" style="margin-top: 0.5rem; font-weight: bold; font-size: 1.1rem;">Meng-Yu Jennifer Kuo</p>
