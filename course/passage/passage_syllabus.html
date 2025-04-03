@@ -76,7 +76,7 @@
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
-    
+
     .intro p {
       margin-bottom: 1rem;
     }
@@ -213,6 +213,37 @@
     text-align: center;
   }
 }
+
+.info-list {
+  font-size: 0.95rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.info-label {
+  display: inline-block;
+  min-width: 220px; /* enough space for longest label */
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .info-item {
+    flex-direction: column;
+  }
+
+  .info-label {
+    min-width: unset;
+    margin-bottom: 0.25rem;
+  }
+}
+
   </style>
 <style>
     .lang-toggle {
@@ -291,9 +322,16 @@
     <p class="description">この講義では、コンピュータがどのように3D世界を「視る」のかを学びます。<br>3Dスキャンや復元技術を体験しながら、研究の考え方や科学的思考も育みます。</p>
     <p class="description">📩 お問い合わせ / Contact: <a href="mailto:myjkuo@ics.nara-wu.ac.jp">myjkuo@ics.nara-wu.ac.jp</a></p>
   </div>
-  <p class="description" style="font-size: 0.95rem; margin-top: 0.5rem;"><strong>キーワード:</strong> ３Dコンピュータビジョン、学術論文、批判的思考、プレゼンテーション能力</p>
+
+  <div class="info-list">
+    <div class="info-item"><span class="info-label">キーワード:</span> ３Dコンピュータビジョン、学術論文、批判的思考、プレゼンテーション能力</div>
+    <div class="info-item"><span class="info-label">授業で使用する言語:</span> 主に英語（日本語も可）</div>
+    <div class="info-item"><span class="info-label">成績評価割合(％):</span> 宿題・授業外レポート（40%）、授業態度・授業への参加度（20%）、受講者の発表（プレゼン）（40%）</div>
+  </div>
+  
+  <!-- <p class="description" style="font-size: 0.95rem; margin-top: 0.5rem;"><strong>キーワード:</strong> ３Dコンピュータビジョン、学術論文、批判的思考、プレゼンテーション能力</p>
   <p class="description" style="font-size: 0.95rem; margin-top: 0.5rem;"><strong>授業で使用する言語:</strong> 主に英語（日本語も可）</p>
-  <p class="description"><strong>成績評価割合(％):</strong> 宿題・授業外レポート（40%）、授業態度・授業への参加度（20%）、受講者の発表（プレゼン）（40%）</p>
+  <p class="description"><strong>成績評価割合(％):</strong> 宿題・授業外レポート（40%）、授業態度・授業への参加度（20%）、受講者の発表（プレゼン）（40%）</p> -->
 </section>
 
 <section class="lang-en">
@@ -312,9 +350,11 @@
     <p class="description">This course explores how computers perceive and understand the 3D world.<br>Through hands-on experiments and visual computing tools, students will gain exposure to research thinking and scientific exploration.</p>
     <p class="description">📩 お問い合わせ / Contact: <a href="mailto:myjkuo@ics.nara-wu.ac.jp">myjkuo@ics.nara-wu.ac.jp</a></p>
   </div>
-  <p class="description" style="font-size: 0.95rem; margin-top: 0.5rem;"><strong>Keywords:</strong> 3D Computer Vision, Academic Papers, Critical Thinking, Presentation Skills</p>
-  <p class="description" style="font-size: 0.95rem; margin-top: 0.5rem;"><strong>Language of Instruction:</strong> Primarily English (Japanese also acceptable)</p>
-  <p class="description"></p><strong>Grading (%):</strong> Homework and reports (40%), Class participation (20%), Final presentations (40%)</p>
+  <div class="info-list">
+    <div class="info-item"><span class="info-label">Keywords:</span> 3D Computer Vision, Academic Papers, Critical Thinking, Presentation Skills</div>
+    <div class="info-item"><span class="info-label">Language of Instruction:</span> Primarily English (Japanese also acceptable)</div>
+    <div class="info-item"><span class="info-label">Grading (%):</span> Homework and reports (40%), Class participation (20%), Final presentations (40%)</div>
+  </div>
 
   <h2>Course Overview</h2>
   <p>This 7-week lab seminar explores how computers "see" the 3D world using computer vision techniques.</p>
