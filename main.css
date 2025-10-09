@@ -19,6 +19,14 @@ td.detail{
 width:70%;
 }
 
+/* ONLY links with class="special-link" will use these styles */
+.special-link:link {
+ color: green; /* Unvisited link color */
+}
+
+.special-link:visited {
+  color: green; /* Visited link color */
+}
 
 img.thumbs {
 max-width:100%;
