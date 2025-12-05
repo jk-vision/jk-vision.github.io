@@ -1,0 +1,38 @@
+/* Define the black-ish, oval button style */
+.icon-box {
+	display: inline-flex; /* Allows content to sit side-by-side */
+	align-items: center; /* Vertically centers icon and text */
+	justify-content: center; 
+	padding: 0.5rem 1.5rem; /* Padding creates the oval shape */
+	min-height: 40px; 
+	border: 2px solid #333; /* Dark gray/black-ish border */
+	border-radius: 25px; /* Oval/Pill shape */
+	margin-bottom: 0.5rem;
+	text-decoration: none;
+	color: #333; /* Icon and text color */
+	font-weight: 500;
+	transition: none; /* Ensure no hover/transition effect */
+}
+
+/* Style the icon inside the oval */
+.icon-box .fa-xl { 
+	color: #333;
+	font-size: 1.25em; /* Appropriate size for side-by-side layout */
+}
+
+/* Style the text inside the oval */
+.icon-box .lead-text {
+	margin-bottom: 0; 
+	font-size: 1.1rem;
+}
+
+/* Ensure the nav-tabs structure is clean */
+.nav-tabs .nav-item {
+	flex-grow: 0; /* Important: prevents items from stretching */
+	margin: 0 10px; /* Add some space between icons */
+	border: none;
+}
+.nav-tabs .nav-link {
+	border: none !important;
+	padding: 1rem 0;
+}
