@@ -3,8 +3,8 @@
    Renders a .glb file inside #viewer using Three.js + GLTFLoader.
    Handles both point cloud GLBs and mesh GLBs automatically.
 
-   Set CONFIG.debug = true to see a wireframe bounding box around the model.
-   This is the easiest way to verify the model is loading and where it is.
+   Centering: uses the centroid (mean position) of the points, not the
+   bounding-box center, so outlier points don't shift the cloud off-screen.
    ========================================================================== */
 
 import * as THREE from 'three';
@@ -22,19 +22,21 @@ const CONFIG = {
   cameraDistanceMultiplier: 1.8,
   damping: 0.08,
 
-  // Auto-scaled per model. The script computes a sensible point size
-  // from the bounding box, so this multiplier is the knob to turn if
-  // the points look too small or too chunky.
+  // Point size is auto-computed from the model's scale. Increase the factor
+  // for chunkier points, decrease for finer ones.
   pointSizeFactor: 0.002,
 
-  // Lighting (used only for textured meshes)
+  // Robust framing: use only the central X% of points to size the camera,
+  // so a handful of outliers don't make the cloud look tiny in the middle.
+  // 0.98 means "ignore the farthest 2% from the centroid".
+  inlierFraction: 0.98,
+
+  // Lighting (only used for textured meshes)
   ambientIntensity: 0.7,
   directionalIntensity: 0.6,
 
-  // 👇 SET TO false ONCE THE MODEL IS VISIBLE
-  // When true, draws a wireframe bounding box so you can confirm
-  // the GLB loaded and see where it is in the scene.
-  debug: true,
+  // Set to true to draw a pink bounding box (useful only for debugging).
+  debug: false,
 };
 
 // -----------------------------------------------------------------------------
@@ -50,14 +52,10 @@ if (!container) {
 
 function initViewer(container) {
   const loaderEl = container.querySelector('.loader');
-  console.log('[viewer] Initializing. Container size:',
-    container.clientWidth, 'x', container.clientHeight);
 
-  // Scene
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(CONFIG.backgroundColor);
 
-  // Camera
   const camera = new THREE.PerspectiveCamera(
     CONFIG.cameraFovDeg,
     container.clientWidth / container.clientHeight,
@@ -66,20 +64,17 @@ function initViewer(container) {
   );
   camera.position.set(0, 0, 2);
 
-  // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   container.appendChild(renderer.domElement);
 
-  // Lights (harmless for point clouds, needed for textured meshes)
   scene.add(new THREE.AmbientLight(0xffffff, CONFIG.ambientIntensity));
   const dirLight = new THREE.DirectionalLight(0xffffff, CONFIG.directionalIntensity);
   dirLight.position.set(2, 3, 4);
   scene.add(dirLight);
 
-  // Orbit controls
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = CONFIG.damping;
@@ -89,7 +84,6 @@ function initViewer(container) {
   // ---------------------------------------------------------------------------
 
   if (loaderEl) loaderEl.textContent = 'Loading…';
-  console.log('[viewer] Fetching:', CONFIG.modelUrl);
 
   let bytesLoaded = 0;
   let hasTotal = false;
@@ -117,11 +111,10 @@ function initViewer(container) {
     (err) => {
       clearInterval(heartbeat);
       console.error('[viewer] GLB load FAILED:', err);
-      if (loaderEl) loaderEl.textContent = 'Failed to load (see console)';
+      if (loaderEl) loaderEl.textContent = 'Failed to load';
     }
   );
 
-  // Render loop
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
@@ -129,7 +122,6 @@ function initViewer(container) {
   }
   animate();
 
-  // Resize handling
   window.addEventListener('resize', () => {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
@@ -138,52 +130,91 @@ function initViewer(container) {
 }
 
 // -----------------------------------------------------------------------------
+// Compute centroid + a robust extent that ignores outliers
+// -----------------------------------------------------------------------------
+
+function analyzePoints(model, inlierFraction) {
+  let totalCount = 0;
+
+  // First pass: sum positions to get the centroid
+  const sum = new THREE.Vector3();
+  model.traverse((child) => {
+    if (child.isPoints || child.isMesh) {
+      const posAttr = child.geometry?.attributes?.position;
+      if (!posAttr) return;
+      const arr = posAttr.array;
+      for (let i = 0; i < arr.length; i += 3) {
+        sum.x += arr[i];
+        sum.y += arr[i + 1];
+        sum.z += arr[i + 2];
+      }
+      totalCount += posAttr.count;
+    }
+  });
+
+  if (totalCount === 0) {
+    return { centroid: new THREE.Vector3(), extent: 1 };
+  }
+
+  const centroid = sum.divideScalar(totalCount);
+
+  // Second pass: compute distances from centroid
+  const dists = new Float32Array(totalCount);
+  let idx = 0;
+  model.traverse((child) => {
+    if (child.isPoints || child.isMesh) {
+      const posAttr = child.geometry?.attributes?.position;
+      if (!posAttr) return;
+      const arr = posAttr.array;
+      for (let i = 0; i < arr.length; i += 3) {
+        const dx = arr[i]     - centroid.x;
+        const dy = arr[i + 1] - centroid.y;
+        const dz = arr[i + 2] - centroid.z;
+        dists[idx++] = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      }
+    }
+  });
+
+  // Sort distances and take the inlierFraction-th percentile as the extent.
+  // This makes camera framing robust to outliers.
+  const sorted = dists.slice().sort();
+  const cutoffIdx = Math.floor(sorted.length * inlierFraction);
+  const extent = sorted[Math.min(cutoffIdx, sorted.length - 1)] || 1;
+
+  return { centroid, extent, totalCount };
+}
+
+// -----------------------------------------------------------------------------
 // Process the loaded GLB
 // -----------------------------------------------------------------------------
 
 function onModelLoaded(gltf, scene, camera, controls, loaderEl) {
-  console.log('[viewer] GLB loaded successfully. Processing…');
   if (loaderEl) loaderEl.textContent = 'Preparing scene…';
 
   const model = gltf.scene;
 
-  // First pass: compute bounding box so we can pick a sensible point size
-  const bbox = new THREE.Box3().setFromObject(model);
-  const size = bbox.getSize(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
+  // Centroid-based analysis with outlier filtering
+  const { centroid, extent, totalCount } = analyzePoints(model, CONFIG.inlierFraction);
 
-  console.log('[viewer] Bounding box:', {
-    min: bbox.min.toArray().map(n => n.toFixed(3)),
-    max: bbox.max.toArray().map(n => n.toFixed(3)),
-    size: size.toArray().map(n => n.toFixed(3)),
-    maxDim: maxDim.toFixed(3),
-  });
+  console.log('[viewer] Centroid:', centroid.toArray().map(n => n.toFixed(3)));
+  console.log(`[viewer] Robust extent (${(CONFIG.inlierFraction * 100).toFixed(0)}th percentile distance): ${extent.toFixed(3)}`);
+  console.log(`[viewer] Total vertices: ${totalCount.toLocaleString()}`);
 
-  const autoPointSize = maxDim * CONFIG.pointSizeFactor;
-  console.log('[viewer] Auto-computed point size:', autoPointSize.toFixed(5));
+  const autoPointSize = extent * CONFIG.pointSizeFactor;
 
-  // Second pass: configure materials for each child
-  let vertCount = 0;
+  // Configure materials
   let isPointCloud = false;
-  let meshCount = 0;
-  let pointsCount = 0;
-
   model.traverse((child) => {
     if (child.isPoints) {
       isPointCloud = true;
-      pointsCount++;
-      vertCount += child.geometry.attributes.position?.count ?? 0;
       const hasColor = !!child.geometry.attributes.color;
-
       child.material = new THREE.PointsMaterial({
         size: autoPointSize,
         vertexColors: hasColor,
-        color: hasColor ? 0xffffff : 0x222222,   // dark gray fallback for visibility on white
+        color: hasColor ? 0xffffff : 0x222222,
         sizeAttenuation: true,
       });
     } else if (child.isMesh) {
-      meshCount++;
-      vertCount += child.geometry.attributes.position?.count ?? 0;
       if (child.geometry.attributes.color && child.material) {
         child.material.vertexColors = true;
         child.material.needsUpdate = true;
@@ -191,33 +222,30 @@ function onModelLoaded(gltf, scene, camera, controls, loaderEl) {
     }
   });
 
-  console.log(`[viewer] Found ${meshCount} mesh(es), ${pointsCount} point object(s), ${vertCount.toLocaleString()} total vertices`);
-
-  // Center the model at the origin
-  const center = bbox.getCenter(new THREE.Vector3());
-  model.position.sub(center);
+  // Translate the model so its centroid sits at the origin
+  model.position.sub(centroid);
 
   scene.add(model);
 
-  // Debug bounding box — shows you where the model is even if points are invisible
+  // Optional debug bounding box
   if (CONFIG.debug) {
     const box = new THREE.Box3().setFromObject(model);
-    const helper = new THREE.Box3Helper(box, 0xff3366);
-    scene.add(helper);
+    scene.add(new THREE.Box3Helper(box, 0xff3366));
     console.log('[viewer] DEBUG: pink bounding box added. Set CONFIG.debug = false to hide.');
   }
 
-  // Position the camera proportionally to the model's size
-  camera.position.set(0, 0, maxDim * CONFIG.cameraDistanceMultiplier);
-  camera.near = Math.max(maxDim / 1000, 0.001);
-  camera.far  = maxDim * 100;
+  // Position camera based on the *robust* extent, not the raw bounding box.
+  // extent is roughly the radius of the inlier cloud, so use 2x for diameter.
+  const framingDistance = extent * 2 * CONFIG.cameraDistanceMultiplier;
+  camera.position.set(0, 0, framingDistance);
+  camera.near = Math.max(extent / 1000, 0.001);
+  camera.far  = extent * 100;
   camera.updateProjectionMatrix();
 
   controls.target.set(0, 0, 0);
   controls.update();
 
-  console.log('[viewer] Camera placed at z =', camera.position.z.toFixed(3));
-  console.log('[viewer] Render complete.');
+  console.log(`[viewer] Rendered ${isPointCloud ? 'point cloud' : 'mesh'}, camera at z = ${framingDistance.toFixed(3)}`);
 
   if (loaderEl) loaderEl.style.display = 'none';
 }
