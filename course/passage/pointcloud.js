@@ -1,25 +1,31 @@
 /* ==========================================================================
-   Point cloud viewer
-   Renders a .ply point cloud inside #pc-viewer using Three.js + PLYLoader.
-   Loaded as an ES module — see the <script type="module"> in the HTML.
+   3D mesh / point cloud viewer
+   Renders a .glb file inside #pc-viewer using Three.js + GLTFLoader.
+   Loaded as an ES module — see <script type="module"> in the HTML.
    ========================================================================== */
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // -----------------------------------------------------------------------------
 // Configuration — change these to suit your data
 // -----------------------------------------------------------------------------
 
 const CONFIG = {
-  plyUrl: 'shisa.glb',   // path to your .ply file (relative to the HTML)
+  modelUrl: 'shisa.glb',
   backgroundColor: 0x2a4d69,        // matches --main-color in your site CSS
-  pointSize: 0.01,                  // initial point size; tweak per dataset
-  fallbackPointColor: 0xffffff,     // used only when the PLY has no vertex colors
   cameraFovDeg: 60,
-  cameraDistanceMultiplier: 1.5,    // how far back to place the camera (× longest cloud axis)
+  cameraDistanceMultiplier: 1.5,    // how far back the camera sits (× longest axis)
   damping: 0.08,
+
+  // Lighting (only matters if the GLB uses PBR materials, not vertex colors)
+  ambientIntensity: 0.6,
+  directionalIntensity: 0.8,
+
+  // If your mesh uses vertex colors (typical for photogrammetry/Open3D output),
+  // set this to true. The script also auto-detects, but this is a manual override.
+  forceVertexColors: false,
 };
 
 // -----------------------------------------------------------------------------
@@ -28,7 +34,7 @@ const CONFIG = {
 
 const container = document.getElementById('pc-viewer');
 if (!container) {
-  console.warn('[pointcloud] No #pc-viewer element found. Skipping init.');
+  console.warn('[viewer] No #pc-viewer element found. Skipping init.');
 } else {
   initViewer(container);
 }
@@ -53,29 +59,54 @@ function initViewer(container) {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
   container.appendChild(renderer.domElement);
 
-  // Orbit controls (drag to rotate, scroll to zoom, right-click to pan)
+  // Lights — needed for PBR materials; harmless for vertex-color meshes
+  scene.add(new THREE.AmbientLight(0xffffff, CONFIG.ambientIntensity));
+  const dirLight = new THREE.DirectionalLight(0xffffff, CONFIG.directionalIntensity);
+  dirLight.position.set(2, 3, 4);
+  scene.add(dirLight);
+
+  // Orbit controls
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = CONFIG.damping;
 
-  // Material — uses per-vertex colors from the PLY if available
-  const material = new THREE.PointsMaterial({
-    size: CONFIG.pointSize,
-    vertexColors: true,
-    sizeAttenuation: true,
-  });
-
   // ---------------------------------------------------------------------------
-  // Load the PLY
+  // Load the GLB — with a fallback for servers that don't send Content-Length
   // ---------------------------------------------------------------------------
 
-  new PLYLoader().load(
-    CONFIG.plyUrl,
-    (geometry) => onPlyLoaded(geometry, scene, camera, controls, material, loaderEl),
-    (xhr) => onPlyProgress(xhr, loaderEl),
-    (err) => onPlyError(err, loaderEl)
+  if (loaderEl) loaderEl.textContent = 'Loading…';
+
+  let bytesLoaded = 0;
+  let hasTotal = false;
+  const heartbeat = setInterval(() => {
+    if (loaderEl && !hasTotal && bytesLoaded > 0) {
+      const mb = (bytesLoaded / 1024 / 1024).toFixed(1);
+      loaderEl.textContent = `Loading… ${mb} MB`;
+    }
+  }, 300);
+
+  new GLTFLoader().load(
+    CONFIG.modelUrl,
+    (gltf) => {
+      clearInterval(heartbeat);
+      onModelLoaded(gltf, scene, camera, controls, loaderEl);
+    },
+    (xhr) => {
+      bytesLoaded = xhr.loaded;
+      if (xhr.total) {
+        hasTotal = true;
+        const pct = ((xhr.loaded / xhr.total) * 100).toFixed(0);
+        if (loaderEl) loaderEl.textContent = `Loading ${pct}%`;
+      }
+    },
+    (err) => {
+      clearInterval(heartbeat);
+      console.error('[viewer] GLB load error:', err);
+      if (loaderEl) loaderEl.textContent = 'Failed to load';
+    }
   );
 
   // ---------------------------------------------------------------------------
@@ -101,41 +132,51 @@ function initViewer(container) {
 }
 
 // -----------------------------------------------------------------------------
-// PLY load callbacks
+// GLB load callback
 // -----------------------------------------------------------------------------
 
-function onPlyLoaded(geometry, scene, camera, controls, material, loaderEl) {
-  geometry.computeBoundingBox();
-  geometry.center();
+function onModelLoaded(gltf, scene, camera, controls, loaderEl) {
+  if (loaderEl) loaderEl.textContent = 'Preparing scene…';
 
-  // Fallback when the file has no per-vertex colors
-  if (!geometry.hasAttribute('color')) {
-    material.vertexColors = false;
-    material.color = new THREE.Color(CONFIG.fallbackPointColor);
-  }
+  const model = gltf.scene;
 
-  const points = new THREE.Points(geometry, material);
-  scene.add(points);
+  // If the GLB has vertex colors (common for photogrammetry/Open3D exports),
+  // make sure the material actually uses them.
+  let vertCount = 0;
+  model.traverse((child) => {
+    if (child.isMesh) {
+      vertCount += child.geometry.attributes.position?.count ?? 0;
+      const hasVertColors = !!child.geometry.attributes.color;
+      if (hasVertColors || CONFIG.forceVertexColors) {
+        if (child.material) {
+          child.material.vertexColors = true;
+          child.material.needsUpdate = true;
+        }
+      }
+    }
+  });
 
-  // Auto-fit camera distance to the cloud's bounding box
-  const size = new THREE.Vector3();
-  geometry.boundingBox.getSize(size);
+  scene.add(model);
+
+  // Auto-center and auto-fit the camera to the model's bounding box
+  const bbox = new THREE.Box3().setFromObject(model);
+  const center = bbox.getCenter(new THREE.Vector3());
+  const size = bbox.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
+
+  // Translate the model so its center is at the origin
+  model.position.sub(center);
+
+  // Position the camera proportionally to the model's size
   camera.position.set(0, 0, maxDim * CONFIG.cameraDistanceMultiplier);
+  camera.near = maxDim / 100;
+  camera.far  = maxDim * 100;
+  camera.updateProjectionMatrix();
+
   controls.target.set(0, 0, 0);
   controls.update();
 
+  console.log(`[viewer] Rendered model with ${vertCount.toLocaleString()} vertices`);
+
   if (loaderEl) loaderEl.style.display = 'none';
-}
-
-function onPlyProgress(xhr, loaderEl) {
-  if (loaderEl && xhr.total) {
-    const pct = ((xhr.loaded / xhr.total) * 100).toFixed(0);
-    loaderEl.textContent = `Loading ${pct}%`;
-  }
-}
-
-function onPlyError(err, loaderEl) {
-  console.error('[pointcloud] PLY load error:', err);
-  if (loaderEl) loaderEl.textContent = 'Failed to load';
 }
