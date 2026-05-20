@@ -3,8 +3,9 @@
    Renders a .glb file inside #viewer using Three.js + GLTFLoader.
    Handles both point cloud GLBs and mesh GLBs automatically.
 
-   Centering: uses the centroid (mean position) of the points, not the
-   bounding-box center, so outlier points don't shift the cloud off-screen.
+   Auto-framing: projects all points onto the screen and pulls the camera
+   back just enough that they fit, with a small margin. This works
+   regardless of outliers, weird coordinate orientations, or scale.
    ========================================================================== */
 
 import * as THREE from 'three';
@@ -19,24 +20,22 @@ const CONFIG = {
   modelUrl: 'shisa.glb',
   backgroundColor: 0xffffff,
   cameraFovDeg: 60,
-  cameraDistanceMultiplier: 1.8,
   damping: 0.08,
 
-  // Point size is auto-computed from the model's scale. Increase the factor
-  // for chunkier points, decrease for finer ones.
+  // Point size auto-scales to the model. Tweak this multiplier for chunkier
+  // or finer points.
   pointSizeFactor: 0.002,
 
-  // Robust framing: use only the central X% of points to size the camera,
-  // so a handful of outliers don't make the cloud look tiny in the middle.
-  // 0.98 means "ignore the farthest 2% from the centroid".
+  // Outlier rejection: ignore the farthest N% of points when framing the
+  // camera. 0.98 = ignore farthest 2%.
   inlierFraction: 0.98,
+
+  // Extra space around the cloud after auto-framing (1.0 = perfect fit, 1.2 = 20% margin)
+  framingMargin: 1.2,
 
   // Lighting (only used for textured meshes)
   ambientIntensity: 0.7,
   directionalIntensity: 0.6,
-
-  // Set to true to draw a pink bounding box (useful only for debugging).
-  debug: false,
 };
 
 // -----------------------------------------------------------------------------
@@ -78,10 +77,6 @@ function initViewer(container) {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = CONFIG.damping;
-
-  // ---------------------------------------------------------------------------
-  // Load the GLB
-  // ---------------------------------------------------------------------------
 
   if (loaderEl) loaderEl.textContent = 'Loading…';
 
@@ -130,58 +125,21 @@ function initViewer(container) {
 }
 
 // -----------------------------------------------------------------------------
-// Compute centroid + a robust extent that ignores outliers
+// Gather all vertex positions from every Points/Mesh child
 // -----------------------------------------------------------------------------
 
-function analyzePoints(model, inlierFraction) {
+function collectAllPositions(model) {
+  const arrays = [];
   let totalCount = 0;
-
-  // First pass: sum positions to get the centroid
-  const sum = new THREE.Vector3();
   model.traverse((child) => {
     if (child.isPoints || child.isMesh) {
       const posAttr = child.geometry?.attributes?.position;
       if (!posAttr) return;
-      const arr = posAttr.array;
-      for (let i = 0; i < arr.length; i += 3) {
-        sum.x += arr[i];
-        sum.y += arr[i + 1];
-        sum.z += arr[i + 2];
-      }
+      arrays.push(posAttr.array);
       totalCount += posAttr.count;
     }
   });
-
-  if (totalCount === 0) {
-    return { centroid: new THREE.Vector3(), extent: 1 };
-  }
-
-  const centroid = sum.divideScalar(totalCount);
-
-  // Second pass: compute distances from centroid
-  const dists = new Float32Array(totalCount);
-  let idx = 0;
-  model.traverse((child) => {
-    if (child.isPoints || child.isMesh) {
-      const posAttr = child.geometry?.attributes?.position;
-      if (!posAttr) return;
-      const arr = posAttr.array;
-      for (let i = 0; i < arr.length; i += 3) {
-        const dx = arr[i]     - centroid.x;
-        const dy = arr[i + 1] - centroid.y;
-        const dz = arr[i + 2] - centroid.z;
-        dists[idx++] = Math.sqrt(dx * dx + dy * dy + dz * dz);
-      }
-    }
-  });
-
-  // Sort distances and take the inlierFraction-th percentile as the extent.
-  // This makes camera framing robust to outliers.
-  const sorted = dists.slice().sort();
-  const cutoffIdx = Math.floor(sorted.length * inlierFraction);
-  const extent = sorted[Math.min(cutoffIdx, sorted.length - 1)] || 1;
-
-  return { centroid, extent, totalCount };
+  return { arrays, totalCount };
 }
 
 // -----------------------------------------------------------------------------
@@ -192,17 +150,51 @@ function onModelLoaded(gltf, scene, camera, controls, loaderEl) {
   if (loaderEl) loaderEl.textContent = 'Preparing scene…';
 
   const model = gltf.scene;
+  const { arrays, totalCount } = collectAllPositions(model);
 
-  // Centroid-based analysis with outlier filtering
-  const { centroid, extent, totalCount } = analyzePoints(model, CONFIG.inlierFraction);
+  if (totalCount === 0) {
+    console.warn('[viewer] No geometry found in the GLB.');
+    if (loaderEl) loaderEl.textContent = 'No geometry found';
+    return;
+  }
+
+  // 1) Centroid (mean position)
+  const centroid = new THREE.Vector3();
+  for (const arr of arrays) {
+    for (let i = 0; i < arr.length; i += 3) {
+      centroid.x += arr[i];
+      centroid.y += arr[i + 1];
+      centroid.z += arr[i + 2];
+    }
+  }
+  centroid.divideScalar(totalCount);
+
+  // 2) Distances from centroid (for outlier-robust extent)
+  const dists = new Float32Array(totalCount);
+  let idx = 0;
+  for (const arr of arrays) {
+    for (let i = 0; i < arr.length; i += 3) {
+      const dx = arr[i]     - centroid.x;
+      const dy = arr[i + 1] - centroid.y;
+      const dz = arr[i + 2] - centroid.z;
+      dists[idx++] = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+  }
+
+  // Pick the inlier extent (e.g., 98th percentile distance)
+  const sorted = dists.slice().sort();
+  const cutoffIdx = Math.min(
+    Math.floor(sorted.length * CONFIG.inlierFraction),
+    sorted.length - 1
+  );
+  const inlierExtent = sorted[cutoffIdx] || 1;
 
   console.log('[viewer] Centroid:', centroid.toArray().map(n => n.toFixed(3)));
-  console.log(`[viewer] Robust extent (${(CONFIG.inlierFraction * 100).toFixed(0)}th percentile distance): ${extent.toFixed(3)}`);
+  console.log(`[viewer] Inlier extent (${(CONFIG.inlierFraction*100).toFixed(0)}th percentile): ${inlierExtent.toFixed(3)}`);
   console.log(`[viewer] Total vertices: ${totalCount.toLocaleString()}`);
 
-  const autoPointSize = extent * CONFIG.pointSizeFactor;
-
-  // Configure materials
+  // 3) Set point material with auto-scaled size
+  const autoPointSize = inlierExtent * CONFIG.pointSizeFactor;
   let isPointCloud = false;
   model.traverse((child) => {
     if (child.isPoints) {
@@ -222,30 +214,35 @@ function onModelLoaded(gltf, scene, camera, controls, loaderEl) {
     }
   });
 
-  // Translate the model so its centroid sits at the origin
+  // 4) Translate the model so the centroid sits at origin
   model.position.sub(centroid);
-
   scene.add(model);
 
-  // Optional debug bounding box
-  if (CONFIG.debug) {
-    const box = new THREE.Box3().setFromObject(model);
-    scene.add(new THREE.Box3Helper(box, 0xff3366));
-    console.log('[viewer] DEBUG: pink bounding box added. Set CONFIG.debug = false to hide.');
-  }
+  // 5) Compute the right camera distance using proper perspective math.
+  // For a sphere of radius R centered at origin, the camera at distance d
+  // sees it filling the frame when: d = R / sin(fov/2).
+  // The HORIZONTAL fov is narrower than vertical when aspect < 1, so we
+  // use whichever is more restrictive.
+  const aspect = camera.aspect;
+  const vFovRad = (CONFIG.cameraFovDeg * Math.PI) / 180;
+  const hFovRad = 2 * Math.atan(Math.tan(vFovRad / 2) * aspect);
+  const limitingFov = Math.min(vFovRad, hFovRad);
 
-  // Position camera based on the *robust* extent, not the raw bounding box.
-  // extent is roughly the radius of the inlier cloud, so use 2x for diameter.
-  const framingDistance = extent * 2 * CONFIG.cameraDistanceMultiplier;
-  camera.position.set(0, 0, framingDistance);
-  camera.near = Math.max(extent / 1000, 0.001);
-  camera.far  = extent * 100;
+  const radius = inlierExtent;
+  const fitDistance = (radius / Math.sin(limitingFov / 2)) * CONFIG.framingMargin;
+
+  camera.position.set(0, 0, fitDistance);
+  camera.near = Math.max(fitDistance / 1000, 0.001);
+  camera.far  = fitDistance * 100;
   camera.updateProjectionMatrix();
 
   controls.target.set(0, 0, 0);
+  controls.minDistance = fitDistance * 0.05;
+  controls.maxDistance = fitDistance * 10;
   controls.update();
 
-  console.log(`[viewer] Rendered ${isPointCloud ? 'point cloud' : 'mesh'}, camera at z = ${framingDistance.toFixed(3)}`);
+  console.log(`[viewer] Camera placed at z = ${fitDistance.toFixed(3)} (radius=${radius.toFixed(3)}, fov=${(limitingFov*180/Math.PI).toFixed(1)}°)`);
+  console.log(`[viewer] Rendered ${isPointCloud ? 'point cloud' : 'mesh'}.`);
 
   if (loaderEl) loaderEl.style.display = 'none';
 }
