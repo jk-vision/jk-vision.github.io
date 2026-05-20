@@ -13,7 +13,7 @@ import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
 // -----------------------------------------------------------------------------
 
 const CONFIG = {
-  plyUrl: 'nakaniwa_setup_1.ply',   // path to your .ply file (relative to the HTML)
+  plyUrl: 'shisa.glb',   // path to your .ply file (relative to the HTML)
   backgroundColor: 0x2a4d69,        // matches --main-color in your site CSS
   pointSize: 0.01,                  // initial point size; tweak per dataset
   fallbackPointColor: 0xffffff,     // used only when the PLY has no vertex colors
