@@ -1,0 +1,72 @@
+/* ==========================================================================
+   3D viewer styles — box-style white card
+   ========================================================================== */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #f5f7fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #333;
+}
+
+.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2a4d69;
+  margin: 0 0 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+/* The box — white card containing the 3D viewer */
+.viewer {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  background: #ffffff;
+  border: 1px solid #e2e5ea;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.viewer canvas {
+  display: block;
+}
+
+/* Centered loading text */
+.viewer .loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #888;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Interaction hint, bottom-left */
+.viewer .hint {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  color: #999;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page { padding: 1.5rem 1rem; }
+  .viewer { height: 360px; }
+}

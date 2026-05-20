@@ -12,31 +12,565 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>コンピュータで「視る」 - シラバス</title>
-
-  <!-- Point cloud viewer styles -->
-  <link rel="stylesheet" href="pointcloud.css">
-
-  <!-- Three.js import map (required for the module script at the bottom) -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  <style>
+    :root {
+      --main-color: #2a4d69;
+      --accent-color: #00a8cc;
+      --bg-color: #f5f7fa;
+      --card-bg: #ffffff;
+      --text-color: #333;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
+
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 0;
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(to right, #2a4d69, #00a8cc);
+      padding: 3rem 1rem 2rem;
+      text-align: center;
+      color: #fff;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 5vw, 2.7rem);
+      font-weight: bold;
+    }
+
+    .intro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: var(--card-bg);
+      margin: -2rem auto 3rem auto;
+      max-width: 1000px;
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+    }
+
+    .intro-images {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .intro img.profile {
+      max-width: 120px;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .intro img.cover {
+      width: 150%;
+      max-width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .intro p {
+      margin-bottom: 1rem;
+    }
+    .intro p.name {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+    }
+
+    .intro p.description {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      color: #444;
+      text-align: center;
+      max-width: 700px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+    }
+
+    section {
+      margin-bottom: 3rem;
+    }
+
+    h2 {
+      border-left: 6px solid var(--accent-color);
+      padding-left: 0.75rem;
+      color: var(--main-color);
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .week {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      transition: transform 0.2s;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .week:hover {
+      transform: translateY(-4px);
+    }
+
+    .week-content {
+      flex: 1;
+    }
+
+    .week h3 {
+      color: var(--main-color);
+      margin-bottom: 0.5rem;
+      font-size: 1.4rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.3rem;
+    }
+
+    .week ul {
+      padding-left: 1.5rem;
+      margin: 0.75rem 0;
+    }
+
+    .week img {
+      width: 80px;
+      height: auto;
+      flex-shrink: 0;
+    }
+
+    a {
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+
+  @media (max-width: 768px) {
+  .intro img.cover,
+  .profile img,
+  .week img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
   }
+
+  .intro-images {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .intro-images img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .week {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .week-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.intro-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+@media (max-width: 768px) {
+  .intro-flex {
+    flex-direction: column;
+    gap: 1rem;
+    flex-wrap: nowrap;
+  }
+}
+@media (max-width: 768px) {
+  .cover {
+    margin-top: 0 !important;
+  }
+}
+@media (max-width: 768px) {
+  .description {
+    padding: 0 1rem;
+    text-align: center;
+  }
+}
+
+.info-list {
+  font-size: 0.95rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.info-label {
+  display: inline-block;
+  min-width: 220px; /* enough space for longest label */
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .info-item {
+    flex-direction: column;
+  }
+
+  .info-label {
+    min-width: unset;
+    margin-bottom: 0.25rem;
+  }
+}
+
+  </style>
+<style>
+    .lang-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+    .lang-toggle button {
+      background: #fff;
+      border: 1px solid var(--accent-color);
+      color: var(--main-color);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .lang-toggle button:hover {
+      background: var(--accent-color);
+      color: #fff;
+    }
+    .lang-ja, .lang-en {
+      display: none;
+    }
+    .lang-ja.active, .lang-en.active {
+      display: block;
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btnJa = document.getElementById("btn-ja");
+      const btnEn = document.getElementById("btn-en");
+      const ja = document.querySelectorAll(".lang-ja");
+      const en = document.querySelectorAll(".lang-en");
+      function showLang(lang) {
+        ja.forEach(el => el.classList.remove("active"));
+        en.forEach(el => el.classList.remove("active"));
+        if (lang === 'ja') ja.forEach(el => el.classList.add("active"));
+        else en.forEach(el => el.classList.add("active"));
+      }
+      btnJa.addEventListener("click", () => showLang('ja'));
+      btnEn.addEventListener("click", () => showLang('en'));
+      showLang('ja');
+    });
   </script>
+<div class="lang-toggle">
+  <button id="btn-ja">日本語</button>
+  <button id="btn-en">English</button>
+</div>
 
 <body>
+<header class="lang-ja">
+    <h3>パサージュ　（７５Ａ/Ｂ）</h3>
+    <h1>コンピュータで「視る」:<br>3Dビジョン研究セミナー</h1>
+    <p style="margin-top: 0.5rem; font-size: 1rem;">🗓️ 前期・火曜日　３・４時限 （場所: G302/Zoom）</p>
+  </header>
+  <header class="lang-en">
+    <h3>パサージュ　（７５Ａ/Ｂ）</h3>
+    <h1>How Do Computers "See"?<br>3D Vision Research Seminar</h1>
+    <p class="description lang-en" style="font-size: 1rem;"><strong>Semester & Time:</strong> Spring Semester – Tuesdays, Periods 3 & 4 （Room: G302/Zoom）</p>
+  </header>
 
-<!-- ===== Point cloud viewer (language-neutral; sits below intro+profile) ===== -->
-<div class="pointcloud-embed" id="pc-viewer">
-  <span class="pc-caption">3D 復元デモ</span>
-  <span class="pc-caption lang-en">3D Reconstruction Demo</span>
-  <div class="pc-loader">Loading…</div>
-  <span class="pc-hint lang-ja">ドラッグで回転 · スクロールでズーム</span>
-  <span class="pc-hint lang-en">drag to rotate · scroll to zoom</span>
+  <div class="container">
+    <section class="lang-ja">
+  <div class="intro">
+    <div class="intro-images">
+      <div class="intro-flex">
+      <!-- <div style="display: flex; align-items: center; gap: 2rem; justify-content: center;"> -->
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <img class="profile" src="profile.png" alt="Instructor Profile Picture">
+          <p class="name" style="margin-top: 0.5rem; font-weight: bold; font-size: 1.1rem;">Meng-Yu Jennifer Kuo</p>
+          <p class="name" style="margin-top: -1.0rem; font-size: 0.9rem;">(生活情報通信科学コース)</p>
+        </div>
+        <img class="cover" style="margin-top: -2.5rem" src="course_visual.png" alt="Course Visual or Animation">
+      </div>
+    </div>
+    <p class="description">この講義では、コンピュータがどのように3D世界を「視る」のかを学びます。<br>3Dスキャンや復元技術を体験しながら、研究の考え方や科学的思考も育みます。</p>
+    <p class="description">📩 お問い合わせ / Contact: <a href="mailto:myjkuo@ics.nara-wu.ac.jp">myjkuo@ics.nara-wu.ac.jp</a></p>
+  </div>
+
+  <div class="info-list">
+    <div class="info-item"><span class="info-label">キーワード:</span> ３Dコンピュータビジョン、学術論文、批判的思考、プレゼンテーション能力</div>
+    <div class="info-item"><span class="info-label">授業で使用する言語:</span> 主に英語（日本語も可）</div>
+    <div class="info-item"><span class="info-label">成績評価割合(％):</span> 宿題・授業外レポート（40%）、授業態度・授業への参加度（20%）、受講者の発表（プレゼン）（40%）</div>
+  </div>
+  
+  <!-- <p class="description" style="font-size: 0.95rem; margin-top: 0.5rem;"><strong>キーワード:</strong> ３Dコンピュータビジョン、学術論文、批判的思考、プレゼンテーション能力</p>
+  <p class="description" style="font-size: 0.95rem; margin-top: 0.5rem;"><strong>授業で使用する言語:</strong> 主に英語（日本語も可）</p>
+  <p class="description"><strong>成績評価割合(％):</strong> 宿題・授業外レポート（40%）、授業態度・授業への参加度（20%）、受講者の発表（プレゼン）（40%）</p> -->
+</section>
+
+<section class="lang-en">
+  <div class="intro">
+    <div class="intro-images">
+      <div class="intro-flex">
+      <!-- <div style="display: flex; align-items: center; gap: 2rem; justify-content: center;"> -->
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <img class="profile" src="profile.png" alt="Instructor Profile Picture">
+          <p class="name" style="margin-top: 0.5rem; font-weight: bold; font-size: 1.1rem;">Meng-Yu Jennifer Kuo</p>
+          <p class="name" style="margin-top: -1.0rem; font-size: 0.9rem;">(Life Computing & <br>Communication Technology Course)</p>
+        </div>
+        <img class="cover" style="margin-top: -2.5rem" src="course_visual.png" alt="Course Visual or Animation">
+      </div>
+    </div>
+    <p class="description">This course explores how computers perceive and understand the 3D world.<br>Through hands-on experiments and visual computing tools, students will gain exposure to research thinking and scientific exploration.</p>
+    <p class="description">📩 お問い合わせ / Contact: <a href="mailto:myjkuo@ics.nara-wu.ac.jp">myjkuo@ics.nara-wu.ac.jp</a></p>
+  </div>
+  <div class="info-list">
+    <div class="info-item"><span class="info-label">Keywords:</span> 3D Computer Vision, Academic Papers, Critical Thinking, Presentation Skills</div>
+    <div class="info-item"><span class="info-label">Language of Instruction:</span> Primarily English (Japanese also acceptable)</div>
+    <div class="info-item"><span class="info-label">Grading (%):</span> Homework and reports (40%), Class participation (20%), Final presentations (40%)</div>
+  </div>
+
+  <h2>Course Overview</h2>
+  <p>This 7-week lab seminar explores how computers "see" the 3D world using computer vision techniques.</p>
+  <p>Students will learn the fundamentals of 3D reconstruction and experience research through hands-on activities and real-world applications.</p>
+</section>
+
+<section class="lang-en">
+  <h2>Syllabus</h2>
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 1: What is Research?</h3>
+        <ul>
+          <li>Course structure and expectations</li>
+          <li>What does it mean to "do research"?</li>
+          <li>Examples of real-world computer vision applications</li>
+        </ul>
+        <!-- <p><a href="materials/week1-handout.pdf" target="_blank">📄 Download Handout</a></p> -->
+      </div>
+      <!-- <video src="videos/week1-overview.mp4" autoplay muted loop playsinline style="max-width: 240px; border-radius: 8px;"></video> -->
+      <!-- <img src="week1-icon.png" alt="Week 1 icon"> -->
+    </div>
+  </div>
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 2: How Do Computers "See"?</h3>
+        <ul>
+          <li>How computer vision differs from human vision</li>
+          <li>Basics of 3D perception (depth, shape understanding)</li>
+        </ul>
+      </div>
+      <!-- <img src="week2-icon.png" alt="Week 2 icon"> -->
+    </div>
+  </div>
+</section>
+
+<section class="lang-en">
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 3: Capturing 3D – How Do Machines Perceive Depth?</h3>
+        <ul>
+          <li>How do we capture 3D? (stereo vision, LiDAR, photogrammetry)</li>
+          <li>Hands-on activity using 3D scanning apps or depth sensors</li>
+        <li>Why is 3D data sometimes inaccurate?</li>
+      </ul>
+    </div>
+    <!-- <img src="week3-icon.png" alt="Week 3 icon"> -->
+  </div>
 </div>
-<!-- ========================================================================== -->
 
+<div class="week">
+  <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+    <div style="flex: 1;">
+      <h3>Week 4: Thinking Like a Researcher – Let’s Read a Paper!</h3>
+      <ul>
+        <li>Why do researchers write papers?</li>
+        <li>Basic structure: title, abstract, figures, and conclusion</li>
+        <li>Collaboratively read and discuss an easy-to-understand paper</li>
+        <li>Explore new perspectives and research challenges through discussion</li>
+      </ul>
+    </div>
+    <!-- <img src="week4-icon.png" alt="Week 4 icon"> -->
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+    <div style="flex: 1;">
+      <h3>Week 5: Final Project Preparation (Part 1)</h3>
+      <ul>
+        <li>Choose one topic from the course and create one of the following:<br>
+        ① Presentation (introduce a paper you found interesting)<br>
+        ② Poster (a visual summary of the paper)<br>
+        ③ Demo (e.g., a 3D scanning demonstration)</li>
+      </ul>
+    </div>
+    <!-- <img src="week5-icon.png" alt="Week 5 icon"> -->
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+    <div style="flex: 1;">
+      <h3>Week 6: Final Project Preparation (Part 2)</h3>
+      <ul>
+        <li>Discussion and feedback exchange with peers</li>
+      </ul>
+    </div>
+    <!-- <img src="week6-icon.png" alt="Week 6 icon"> -->
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+    <div style="flex: 1;">
+      <h3>Week 7: Final Presentations & Reflection</h3>
+      <ul>
+        <li>Workshop-style project presentations (presentation, poster, or demo)</li>
+        <li>Class-wide reflection and open discussion</li>
+        <li>Wrap-up and future directions: How can we continue exploring 3D vision research?</li>
+      </ul>
+    </div>
+    <!-- <img src="week7-icon.png" alt="Week 7 icon"> -->
+  </div>
+</div>
+
+</section>
+
+<section class="lang-ja">
+      <h2>コース概要</h2>
+      <p>7週間のラボセミナーで、コンピュータビジョン技術を通じて、コンピュータがどのように3D世界を「視る」のかを探究します。</p>
+      <p>3D復元の基礎を学び、実習や実世界での応用を通じて、研究の進め方を体験します。</p>
+    </section>
+
+    <section class="lang-ja">
+  <h2>シラバス</h2>
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 1: 研究とは何か？</h3>
+        <ul>
+          <li>授業の概要と進め方の説明</li>
+          <li>「研究をする」とはどういうことか？</li>
+          <li>コンピュータビジョンにおける社会的応用例（VR/AR、ロボットAIなど）</li>
+        </ul>
+        <!-- <p><a href="materials/week1-handout-ja.pdf" target="_blank">📄 補足資料をダウンロード</a></p> -->
+      </div>
+      <!-- <video src="videos/week1-overview-ja.mp4" autoplay muted loop playsinline style="max-width: 240px; border-radius: 8px;"></video> -->
+      <!-- <img src="week1-icon.png" alt="Week 1 icon"> -->
+    </div>
+  </div>
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 2: コンピュータはどのように「視る」のか？</h3>
+        <ul>
+          <li>人間の視覚との違い</li>
+          <li>3D視覚の基礎（奥行感、形状理解）</li>
+        </ul>
+      </div>
+      <!-- <img src="week2-icon.png" alt="Week 2 icon"> -->
+    </div>
+  </div>
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 3: 3Dキャプチャ – コンピュータはどうやって奥行きを理解する？</h3>
+        <ul>
+          <li>ステレオ視、LiDAR、写真測量などの3D取得方法</li>
+          <li>3Dスキャンアプリや深度センサーの実習</li>
+          <li>なぜ3Dデータは不正確になるのか？</li>
+        </ul>
+      </div>
+      <!-- <img src="week3-icon.png" alt="Week 3 icon"> -->
+    </div>
+  </div>
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 4: 研究者の考え方を学ぶ – 論文を読んでみよう</h3>
+        <ul>
+          <li>なぜ研究者は論文を書くのか？</li>
+          <li>タイトル、要旨、図、結論などの基本構成</li>
+          <li>やさしい論文をグループで分担して読む、意見交換</li>
+          <li>ディスカッションを通して研究の課題や新たな視点を考える</li>
+        </ul>
+      </div>
+      <!-- <img src="week4-icon.png" alt="Week 4 icon"> -->
+    </div>
+  </div>
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 5: 最終プロジェクト準備（パート1）</h3>
+        <ul>
+          <li>授業で学んだトピックの中から一つを選び、次のいずれかを作成する：<br>
+            ① プレゼンテーション（興味のある論文の紹介）<br>
+            ② ポスター（興味のある論文の視覚的なまとめ）<br>
+            ③ デモ（例：3Dスキャンの実演）</li>
+        </ul>
+      </div>
+      <!-- <img src="week5-icon.png" alt="Week 5 icon"> -->
+    </div>
+  </div>
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 6: 最終プロジェクト準備（パート2）</h3>
+        <ul>
+          <li>ディスカッション、意見交換</li>
+        </ul>
+      </div>
+      <!-- <img src="week6-icon.png" alt="Week 6 icon"> -->
+    </div>
+  </div>
+  <div class="week">
+    <div class="week-content" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3>Week 7: 最終発表＆振り返り</h3>
+        <ul>
+          <li>ワークショップ形式のプロジェクト発表（プレゼン・ポスター・デモ）</li>
+          <li>全体の振り返りと意見交換</li>
+          <li>まとめと今後の展望：3Dビジョンの研究をさらに探求するには？</li>
+        </ul>
+      </div>
+      <!-- <img src="week7-icon.png" alt="Week 7 icon"> -->
+    </div>
+  </div>
+</section>
+  </div>
+  </div>
+
+  <footer style="text-align: center; padding: 2rem 1rem; background-color: #eef3f7; color: #555; font-size: 0.95rem;">
+    <p>&copy; 2025 Meng-Yu Jennifer Kuo</p>
+  </footer>
 </body>
 </html>

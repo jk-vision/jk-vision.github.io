@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Viewer</title>
+
+  <link rel="stylesheet" href="viewer.css">
+
+  <!-- Three.js import map (must come before the module script) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <main class="page">
+    <h1 class="title">3D Reconstruction Demo</h1>
+
+    <div class="viewer" id="viewer">
+      <div class="loader">Loading…</div>
+      <div class="hint">drag to rotate · scroll to zoom · right-click to pan</div>
+    </div>
+  </main>
+
+  <script type="module" src="viewer.js"></script>
+</body>
+</html>
