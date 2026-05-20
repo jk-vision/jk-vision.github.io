@@ -1,0 +1,74 @@
+/* ==========================================================================
+   Point cloud viewer styles
+   Embedded 3D point cloud viewer using Three.js + PLYLoader
+   ========================================================================== */
+
+.pointcloud-embed {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  height: 420px;
+  margin: 0 auto 3rem;
+  background: var(--main-color, #2a4d69);
+  border-radius: 16px;
+  box-shadow: var(--shadow, 0 4px 12px rgba(0, 0, 0, 0.06));
+  overflow: hidden;
+}
+
+.pointcloud-embed canvas {
+  display: block;
+}
+
+/* Caption in the top-left corner */
+.pointcloud-embed .pc-caption {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Override global .lang-ja / .lang-en (which use display:block)
+   so inline caption spans toggle as inline instead */
+.pointcloud-embed .lang-ja,
+.pointcloud-embed .lang-en {
+  display: none;
+}
+.pointcloud-embed .lang-ja.active,
+.pointcloud-embed .lang-en.active {
+  display: inline;
+}
+
+/* Centered loading text */
+.pointcloud-embed .pc-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Interaction hint in the bottom-left corner */
+.pointcloud-embed .pc-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 18px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+/* Responsive: shrink height on small screens */
+@media (max-width: 768px) {
+  .pointcloud-embed {
+    height: 320px;
+    border-radius: 12px;
+  }
+}
