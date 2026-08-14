@@ -1,7 +1,7 @@
 /* My stuff */
 table.papers{
 /*padding:0px;*/
-margin:20px;
+margin:0 20px 20px;
 border:0px;
 border-collapse:collapse;
 }
@@ -17,6 +17,29 @@ text-align: left;
 }
 td.detail{
 width:70%;
+}
+
+ul.news {
+    list-style: none;
+    padding-left: 40px;
+    margin: 0.2em 0 0.8em;
+}
+ul.news li {
+    display: grid;
+    grid-template-columns: 6.2em minmax(0, 1fr);
+    gap: 0 0.6em;
+    margin-bottom: 0.45em;
+}
+ul.news .proj {
+    color: #2F6B34;
+    font-weight: bold;
+    border-bottom: 1.5px solid rgba(47, 107, 52, 0.3);
+}
+ul.news .proj:hover {
+    border-bottom: 1.5px solid #2F6B34;
+}
+@media (max-width: 600px) {
+    ul.news li { grid-template-columns: 1fr; gap: 0; }
 }
 
 /* ONLY links with class="special-link" will use these styles */
@@ -40,6 +63,18 @@ max-width:100%;
     margin: 0px;
 	border: 0px;
     border-collapse: collapse;
+}
+
+.nickname {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #2F6B34;
+    background: #e8f1e4;
+    border-radius: 4px;
+    padding: 1px 7px;
+    margin-bottom: 3px;
+    white-space: nowrap;
 }
 
 article{ 
@@ -444,3 +479,5 @@ table.imgtable, table.imgtable td {
     border: none;
     text-align: left;
 }
+
+

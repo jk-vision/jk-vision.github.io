@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Plant4D · Structure-aware Riemannian Growth Fields for 4D Plant Modeling</title>
+  <meta name="author" content="Meng-Yu Jennifer Kuo">
+  <meta name="description" content="Plant4D: Structure-aware Riemannian Growth Fields for 4D Plant Modeling. WACV 2027.">
+
+  <!-- Social preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Plant4D: Structure-aware Riemannian Growth Fields for 4D Plant Modeling">
+  <meta property="og:description" content="Continuous 4D plant growth modeling from sparse temporal observations. WACV 2027.">
+  <meta property="og:image" content="./teaser.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- LaTeX rendering. Single $...$ is off by default in MathJax,
+       so it's switched on explicitly below. -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* ============================================================
+       TOKENS
+       ============================================================ */
+    :root {
+      --bg:          #ffffff;
+      --surface:     #f7f8f7;
+      --ink:         #16211c;
+      --muted:       #5c6b63;
+      --faint:       #8a968f;
+      --accent:      #2f7d4f;
+      --accent-deep: #1e5c39;
+      --accent-soft: #e9f3ec;
+      --line:        #e4e8e4;
+      --hl-1:        #ca716e;  /* "Structure-aware" */
+      --hl-2:        #9c6a15;  /* "4D Plant Modeling" */
+
+      --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+      --font-body:    "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+      --wide: 1000px;
+      --text: 760px;
+      --radius: 14px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:          #0f1512;
+        --surface:     #151d18;
+        --ink:         #e8efe9;
+        --muted:       #a3b3a8;
+        --faint:       #7d8d82;
+        --accent:      #5fbd84;
+        --accent-deep: #7fd39c;
+        --accent-soft: #1a2a20;
+        --line:        #24322a;
+        --hl-1:        #dd9491;
+        --hl-2:        #d6a548;
+      }
+    }
+
+    /* ============================================================
+       BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent-deep); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    img, video { max-width: 100%; height: auto; display: block; }
+
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin: 0;
+    }
+
+    .wrap { width: 100%; max-width: var(--wide); margin: 0 auto; padding: 0 24px; }
+    .narrow { max-width: var(--text); margin-left: auto; margin-right: auto; }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    .masthead {
+      padding: 72px 0 8px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: 12.5px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+      background: var(--accent-soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 16px;
+      margin-bottom: 28px;
+    }
+    .badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .title {
+      font-size: clamp(2.1rem, 5.5vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      color: var(--accent);
+    }
+    .title .leaf {
+      font-size: 0.72em;
+      margin-left: 0.12em;
+      vertical-align: 0.06em;
+    }
+
+    .subtitle {
+      font-family: var(--font-display);
+      font-size: clamp(1.15rem, 2.7vw, 1.5rem);
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: -0.015em;
+      line-height: 1.35;
+      max-width: 900px;
+      margin: 14px auto 0;
+      text-wrap: balance;
+    }
+    .subtitle b { font-weight: 600; }
+    .subtitle .h1 { color: var(--hl-1); }
+    .subtitle .h2 { color: var(--hl-2); }
+
+    /* Authors */
+    .authors {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 28px;
+      margin: 36px auto 0;
+      font-size: 17px;
+      font-weight: 500;
+    }
+    .authors a { color: var(--ink); }
+    .authors a:hover { color: var(--accent-deep); }
+    .authors sup { color: var(--accent); font-weight: 600; }
+
+    .affiliations {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 24px;
+      margin-top: 12px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+    .affiliations sup { color: var(--accent); }
+
+    /* Link pills */
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 34px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 20px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .pill:hover {
+      text-decoration: none;
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      transform: translateY(-2px);
+    }
+    .pill i { color: var(--accent-deep); font-size: 1rem; }
+    .pill.is-pending {
+      color: var(--faint);
+      cursor: default;
+      pointer-events: none;
+    }
+    .pill.is-pending i { color: var(--faint); }
+    .pill .soon {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    /* ============================================================
+       TEASER
+       ============================================================ */
+    .teaser { margin-top: 60px; }
+
+    /* Browsers indent <figure> by 40px on each side by default, which made
+       the overview figure 80px narrower than the teaser. Reset it, and let
+       every figure image fill its column the way the teaser does. */
+    figure { margin: 0; }
+    .teaser img,
+    figure img { width: 100%; }
+
+    .caption {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin: 16px auto 0;
+      max-width: 100%;
+      text-align: center;
+    }
+    .caption b { color: var(--ink); font-weight: 600; }
+
+    /* inline math should sit in the line, not tower over it */
+    mjx-container[jax="CHTML"][display="false"] { font-size: 105%; }
+    mjx-container { color: inherit; }
+
+    /* ============================================================
+       TL;DR
+       ============================================================ */
+    /* ============================================================
+       SECTIONS
+       ============================================================ */
+    .section { padding: 84px 0 0; }
+
+    .eyebrow {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .eyebrow::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .section h2 {
+      font-size: clamp(1.75rem, 4vw, 2.35rem);
+      margin-bottom: 20px;
+    }
+
+    .section p { color: var(--ink); }
+    .lede { color: var(--muted); font-size: 17.5px; }
+
+    .abstract p {
+      text-align: justify;
+      hyphens: auto;
+      margin: 0;
+    }
+
+    /* Figure placeholder — delete this rule once the image is in */
+    .fig-placeholder {
+      display: grid;
+      place-items: center;
+      gap: 6px;
+      width: 100%;
+      aspect-ratio: 16 / 7;
+      border: 1.5px dashed var(--line);
+      background: var(--surface);
+      color: var(--faint);
+      text-align: center;
+      padding: 24px;
+    }
+    .fig-placeholder .name {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .fig-placeholder .hint { font-size: 13.5px; }
+
+    /* ============================================================
+       RESULTS TABLE
+       ============================================================ */
+    .table-scroll {
+      margin-top: 28px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15.5px;
+    }
+    thead th {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: right;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    thead th:first-child { text-align: left; }
+
+    tbody td {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 14.5px;
+      white-space: nowrap;
+    }
+    tbody td:first-child {
+      text-align: left;
+      font-family: var(--font-body);
+      font-size: 15.5px;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    tr.group td {
+      font-family: var(--font-display);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--faint);
+      background: var(--surface);
+      padding-top: 14px;
+      padding-bottom: 8px;
+    }
+    tr.ours td { background: var(--accent-soft); font-weight: 600; }
+    tr.ours td:first-child { color: var(--accent-deep); }
+
+    /* ============================================================
+       BIBTEX
+       ============================================================ */
+    .bibtex-box {
+      position: relative;
+      margin-top: 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px 24px 20px;
+    }
+    .bibtex-box pre {
+      margin: 0;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+    .copy-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      font-family: var(--font-display);
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: color .18s ease, border-color .18s ease;
+    }
+    .copy-btn:hover { color: var(--accent-deep); border-color: var(--accent); }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    /* Acknowledgement — quieter than the other sections */
+    .ack h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 10px;
+    }
+    .ack p {
+      margin: 0;
+      font-size: 15.5px;
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 72px;
+      padding: 26px 0 56px;
+      border-top: 1px solid var(--line);
+      font-size: 13.5px;
+      color: var(--faint);
+      text-align: center;
+    }
+    footer p { margin: 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+    }
+
+    /* ============================================================
+       SMALL SCREENS
+       ============================================================ */
+    @media (max-width: 640px) {
+      body { font-size: 16px; }
+      .masthead { padding-top: 48px; }
+      .section { padding-top: 64px; }
+      .abstract p { text-align: left; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==========================================================
+       HEADER
+       ========================================================== -->
+  <header class="masthead">
+    <div class="wrap">
+      <span class="badge"><span class="dot"></span> WACV 2027 (Round 1) · 4D Plant Modeling</span>
+
+      <h1 class="title">Plant4D<span class="leaf">&#127793;</span></h1>
+      <p class="subtitle"><b class="h1">Structure-aware</b> Riemannian Growth Fields for <b class="h2">4D Plant Modeling</b></p>
+
+      <div class="authors">
+        <span><a href="https://jk-vision.github.io/">Meng-Yu Jennifer Kuo</a><sup>&dagger;</sup></span>
+        <span><a href="https://scholar.google.com/citations?user=4OCOer8AAAAJ&hl=ja">Ryo Kawahara</a><sup>&Dagger;</sup></span>
+      </div>
+
+      <div class="affiliations">
+        <span><sup>&dagger;</sup> Nara Women's University, Nara, Japan &#129420;</span>
+        <span><sup>&Dagger;</sup> Kyoto University, Kyoto, Japan</span>
+      </div>
+
+      <!-- Swap href="#" for the real URL once each is live, and drop the
+           is-pending class + <span class="soon"> to activate the pill. -->
+      <ul class="links">
+        <li>
+          <span class="pill is-pending">
+            <i class="fa-solid fa-file-pdf"></i> Paper<span class="soon">soon</span>
+          </span>
+        </li>
+        <li>
+          <a class="pill" href="http://arxiv.org/abs/2608.13007">
+            <i class="fa-solid fa-file-lines"></i> arXiv
+          </a>
+        </li>
+        <li>
+          <span class="pill is-pending">
+            <i class="fa-brands fa-github"></i> Code <span class="soon">soon</span>
+          </span>
+        </li>
+        <li>
+          <span class="pill is-pending">
+            <i class="fa-solid fa-database"></i> Data <span class="soon">soon</span>
+          </span>
+        </li>
+        <li>
+          <a class="pill" href="#bibtex">
+            <i class="fa-solid fa-quote-right"></i> BibTeX
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       TEASER
+       ========================================================== -->
+  <div class="wrap narrow teaser">
+    <img src="./teaser.png" alt="Plant4D reconstructs dense 4D plant growth from two sparse timepoint observations, with skeleton nodes color-coded by tracking identity.">
+    <p class="caption">
+      <b>Dense 4D growth from sparse observations.</b> Our method generates spatio-temporal, dense and holistic 4D plant
+      growth from as few as two sparse timepoint observations, tracking correspondences as time progresses — something
+      conventional methods struggle to achieve. Nodes on the topological skeleton are color-coded by their tracking
+      identities to show structural consistency.
+    </p>
+  </div>
+
+  <!-- ==========================================================
+       ABSTRACT
+       ========================================================== -->
+  <section class="section">
+    <div class="wrap narrow abstract">
+      <div class="eyebrow">Abstract</div>
+      <p>
+        In this paper, we introduce a novel framework for 4D plant growth modeling that reconstructs the continuous
+        geometric and topological evolution of plants from sparse temporal observations. Existing methods mainly rely on
+        dense registration, yet reliable dense sequences are hard to obtain due to scanning constraints and
+        self-occlusions, leaving these approaches struggling under large temporal gaps where rapid organ emergence
+        violates local rigidity. To overcome this, we bridge these gaps by formulating plant morphogenesis as a
+        continuous procedural process on a structure-aware Riemannian growth field; this jointly models topology
+        evolution and geometric deformation, preserving botanical hierarchies and stable spatio-temporal correspondences
+        across distant timepoints. Our key idea is to ground symbolic growth rules within a continuous geodesic flow,
+        where organ development follows biologically modulated trajectories that preserve structural coherence under
+        topological changes. We further contribute a 10-day dual-species dataset with dense geometric and semantic
+        annotations. Experiments demonstrate that our method accurately tracks individual organ growth over time and
+        significantly outperforms state-of-the-art baselines in both geometric accuracy and correspondence consistency.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       METHOD
+       ========================================================== -->
+  <section class="section">
+    <div class="wrap narrow">
+      <div class="eyebrow">How it works</div>
+      <h2>Growth as a flow</h2>
+      <p class="lede">
+        Rather than matching one scan to the next, Plant4D treats morphogenesis as a continuous procedural process.
+        Symbolic growth rules describe <em>what</em> develops; a Riemannian geodesic flow describes <em>how</em> it moves
+        — and the plant's botanical hierarchy holds the two together.
+      </p>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       OVERVIEW FIGURE
+       Figures use .wrap narrow so they line up with the body text.
+       Drop "narrow" on any figure you want to run full-width.
+       ========================================================== -->
+  <div class="wrap narrow" style="margin-top: 40px;">
+    <figure>
+
+      <img src="./overview.png" alt="Overview of the Plant4D pipeline.">
+      <p class="caption" style="text-align:left;">
+        <b>Overview.</b> Overview of our 4D Plant Modeling Pipeline. Given as few as two sparse temporal semantic point clouds, we first recover the structural scaffold and perform continuous topological growth inference to optimize a temporal L-system $L(t)$ (Sec. 3). These symbolic transitions are then grounded in a structure-aware Riemannian growth field on a stratified manifold $\mathcal{M}(x(t))$ (Sec. 4). By integrating a continuous growth velocity field $\dot{\Theta}(x(t))$ governed by morphological smoothness and sigmoid maturation priors, our framework generates a holistic 4D representation with dense spatio-temporal correspondences (Sec. 5).
+      </p>
+    </figure>
+  </div>
+
+  <!-- ==========================================================
+       RESULTS + QUALITATIVE FIGURES — commented out for now.
+       Uncomment and fill in when the numbers / figures are ready.
+       (Inner comment markers were rewritten as [[ ]] so this whole
+       block could be commented out in one go. If you re-enable it,
+       turn those back into normal HTML comment markers.)
+       ==========================================================
+  [[ ==========================================================
+       RESULTS  —  ⚠️ replace the placeholder numbers below
+       ========================================================== ]]
+  <section class="section">
+    <div class="wrap narrow">
+      <div class="eyebrow">Results</div>
+      <h2>Accurate growth, consistent correspondences</h2>
+      <p class="lede">
+        Across both species, Plant4D improves on state-of-the-art baselines in geometric accuracy and in
+        correspondence consistency over time.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>CD (mm&sup2;) &darr;</th>
+              <th>EPE (mm) &darr;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="group"><td colspan="3">Dense registration baselines</td></tr>
+            <tr><td>Baseline A</td><td>—</td><td>—</td></tr>
+            <tr><td>Baseline B</td><td>—</td><td>—</td></tr>
+            <tr class="group"><td colspan="3">Structure-aware methods</td></tr>
+            <tr><td>Baseline C</td><td>—</td><td>—</td></tr>
+            <tr class="ours"><td>Plant4D (ours)</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption" style="text-align:left;">
+        Fill in your metrics and baseline names here, then describe the protocol in a sentence — how many sequences,
+        how many runs, and what each method receives as input.
+      </p>
+    </div>
+  </section>
+
+  [[ Duplicate this block for each qualitative figure.
+  <section class="section">
+    <div class="wrap narrow">
+      <img src="./qualitative.png" alt="" style="border-radius:14px;border:1px solid var(--line);">
+      <p class="caption"><b>Qualitative comparison.</b> Describe what the reader should look at.</p>
+    </div>
+  </section>
+  ]]
+  -->
+
+  <!-- ==========================================================
+       BIBTEX
+       ========================================================== -->
+  <section class="section" id="bibtex">
+    <div class="wrap narrow">
+      <div class="eyebrow">Citation</div>
+      <h2>BibTeX</h2>
+      <div class="bibtex-box">
+        <button class="copy-btn" id="copyBib">Copy</button>
+      <pre id="bibText">@misc{kuo2026plant4d,
+        title         = {Structure-aware Riemannian Growth Fields for 4D Plant Modeling},
+        author        = {Kuo, Meng-Yu Jennifer and Kawahara, Ryo},
+        year          = {2026},
+        eprint        = {2608.13007},
+        archivePrefix = {arXiv},
+        primaryClass  = {cs.CV},
+        url           = {https://arxiv.org/abs/2608.13007}
+      }</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       FOOTER
+       ========================================================== -->
+  <!-- ==========================================================
+       ACKNOWLEDGEMENT
+       ========================================================== -->
+  <section class="section ack">
+    <div class="wrap narrow">
+      <h2>Acknowledgement</h2>
+      <p>
+        This work was in part supported by the Organization for the Promotion of Gender Equality at Nara Women's
+        University.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p>&copy; 2026 Meng-Yu Jennifer Kuo</p>
+    </div>
+  </footer>
+
+  <script>
+    // Copy BibTeX
+    document.getElementById('copyBib').addEventListener('click', function () {
+      var btn = this;
+      navigator.clipboard.writeText(document.getElementById('bibText').innerText).then(function () {
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
+      }).catch(function () {
+        btn.textContent = 'Press ⌘C';
+      });
+    });
+  </script>
+
+</body>
+
+</html>
