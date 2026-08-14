@@ -562,6 +562,31 @@
   </section>
 
   <!-- ==========================================================
+       DATASET
+       ========================================================== -->
+  <section class="section">
+    <div class="wrap narrow">
+      <div class="eyebrow">Dataset</div>
+      <h2>Daily growth of bean and broccoli</h2>
+      <!-- <p class="lede">
+        Daily growth measurements of bean and broccoli specimens
+      </p> -->
+
+      <figure style="margin-top: 30px;">
+        <img src="./dataset.png" alt="Data collection pipeline for bean and broccoli over ten days.">
+        <p class="caption" style="text-align:left;">
+          <b>Bean and broccoli data collection over 10 days.</b> Each day, for every
+          specimen, we capture about 30 multi-view RGB images, extract masks using
+          SAM 3, reconstruct the 3D geometry through a Gaussian Splatting&ndash;based
+          multi-view pipeline, extract the skeleton, and perform instance annotation,
+          yielding the temporal sequence of 3D geometry. The same process generalizes
+          to other species.
+        </p>
+      </figure>
+    </div>
+  </section>
+
+<!-- ==========================================================
        METHOD
        ========================================================== -->
   <section class="section">
@@ -591,6 +616,7 @@
       </p>
     </figure>
   </div>
+
 
   <!-- ==========================================================
        RESULTS + QUALITATIVE FIGURES — commented out for now.
