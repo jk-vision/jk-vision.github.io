@@ -5,16 +5,56 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Plant4D · Structure-aware Riemannian Growth Fields for 4D Plant Modeling</title>
-  <meta name="author" content="Meng-Yu Jennifer Kuo">
-  <meta name="description" content="Plant4D: Structure-aware Riemannian Growth Fields for 4D Plant Modeling. WACV 2027.">
+  <!-- ============================================================
+       REPLACE every occurrence of the placeholder URL below with the
+       real address of this page once it is live.
+       ============================================================ -->
+  <title>Plant4D: Structure-aware Riemannian Growth Fields for 4D Plant Modeling</title>
+  <meta name="description"
+    content="Plant4D reconstructs the continuous geometric and topological evolution of plants from sparse temporal observations, using a structure-aware Riemannian growth field. WACV 2027. Includes a 10-day dual-species dataset of bean and broccoli.">
+  <meta name="author" content="Meng-Yu Jennifer Kuo, Ryo Kawahara">
+  <link rel="canonical" href="https://jk-vision.github.io/plant4d/">
 
-  <!-- Social preview -->
-  <meta property="og:type" content="website">
+  <!-- Google Scholar indexing -->
+  <meta name="citation_title" content="Plant4D: Structure-aware Riemannian Growth Fields for 4D Plant Modeling">
+  <meta name="citation_author" content="Kuo, Meng-Yu Jennifer">
+  <meta name="citation_author" content="Kawahara, Ryo">
+  <meta name="citation_publication_date" content="2027">
+  <meta name="citation_conference_title"
+    content="IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)">
+  <!-- <meta name="citation_pdf_url" content="https://arxiv.org/pdf/XXXX.XXXXX"> -->
+
+  <!-- Social preview. og:image MUST be an absolute URL or it will not render. -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jk-vision.github.io/plant4d/">
   <meta property="og:title" content="Plant4D: Structure-aware Riemannian Growth Fields for 4D Plant Modeling">
-  <meta property="og:description" content="Continuous 4D plant growth modeling from sparse temporal observations. WACV 2027.">
-  <meta property="og:image" content="./teaser.png">
+  <meta property="og:description"
+    content="Continuous 4D plant growth modeling from sparse temporal observations. WACV 2027.">
+  <meta property="og:image" content="https://jk-vision.github.io/plant4d/teaser.png">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Plant4D: Structure-aware Riemannian Growth Fields for 4D Plant Modeling">
+  <meta name="twitter:description"
+    content="Continuous 4D plant growth modeling from sparse temporal observations. WACV 2027.">
+  <meta name="twitter:image" content="https://jk-vision.github.io/plant4d/teaser.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "Plant4D: Structure-aware Riemannian Growth Fields for 4D Plant Modeling",
+    "author": [
+      { "@type": "Person", "name": "Meng-Yu Jennifer Kuo",
+        "affiliation": "Nara Women's University" },
+      { "@type": "Person", "name": "Ryo Kawahara",
+        "affiliation": "Kyoto University" }
+    ],
+    "datePublished": "2027",
+    "publisher": "IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)",
+    "url": "https://jk-vision.github.io/plant4d/",
+    "image": "https://jk-vision.github.io/plant4d/teaser.png",
+    "abstract": "We introduce a framework for 4D plant growth modeling that reconstructs the continuous geometric and topological evolution of plants from sparse temporal observations."
+  }
+  </script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
@@ -150,6 +190,9 @@
       width: 6px; height: 6px; border-radius: 50%;
       background: var(--accent);
     }
+
+    .title-block { margin: 0; font-weight: inherit; letter-spacing: normal; }
+    .title, .subtitle { display: block; }
 
     .title {
       font-size: clamp(2.1rem, 5.5vw, 3rem);
@@ -480,8 +523,10 @@
     <div class="wrap">
       <span class="badge"><span class="dot"></span> WACV 2027 (Round 1) · 4D Plant Modeling</span>
 
-      <h1 class="title">Plant4D<span class="leaf">&#127793;</span></h1>
-      <p class="subtitle"><b class="h1">Structure-aware</b> Riemannian Growth Fields for <b class="h2">4D Plant Modeling</b></p>
+      <h1 class="title-block">
+        <span class="title">Plant4D<span class="leaf">&#127793;</span></span>
+        <span class="subtitle"><b class="h1">Structure-aware</b> Riemannian Growth Fields for <b class="h2">4D Plant Modeling</b></span>
+      </h1>
 
       <div class="authors">
         <span><a href="https://jk-vision.github.io/">Meng-Yu Jennifer Kuo</a><sup>&dagger;</sup></span>
