@@ -295,6 +295,77 @@
        ============================================================ */
     .teaser { margin-top: 60px; }
 
+    /* Teaser = left part of teaser.png (input pair + arrow) beside the
+       looping teaser.mp4. Both are cropped here in CSS, so the original
+       files are used as-is:
+         - teaser.png (4427x1260): show only x 30-840, y 30-1190
+         - teaser.mp4 (1280x720):  trim the black bars (16px top/bottom)
+           and the grey edge lines (1px left, 2px right; the "O" of the
+           left title starts right at the edge, so keep the left trim tiny)
+       flex-grow = each crop's width/height x 1000, so both panels
+       always end up the same height. */
+    .teaser-row {
+      display: flex;
+      align-items: flex-start;
+      max-width: 600px;   /* teaser size: raise or lower to taste */
+      margin: 0 auto;
+    }
+    .teaser-crop { position: relative; overflow: hidden; min-width: 0; }
+    .teaser-crop > * { display: block; max-width: none; height: auto; }
+
+    .crop-input { flex: 698 1 0; aspect-ratio: 810 / 1160; }
+    .crop-input img {
+      width: calc(100% * 4427 / 810) !important;
+      margin-left: calc(-100% * 30 / 810);
+      margin-top:  calc(-100% * 30 / 810);   /* % margins use the width */
+    }
+
+    .crop-video { flex: 1856 1 0; aspect-ratio: 1277 / 688; }
+    .crop-video video {
+      width: calc(100% * 1280 / 1277);
+      margin-left: calc(-100% * 1 / 1277);
+      margin-top:  calc(-100% * 16 / 1277);
+    }
+
+    /* Click / tap to pause or play. The button in the bottom-right corner
+       appears while the mouse is over the video, and stays while paused. */
+    .crop-video { cursor: pointer; }
+    .video-state {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(22, 33, 28, 0.55);
+      color: #fff;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity .2s ease;
+      pointer-events: none;
+    }
+    .crop-video:hover .video-state,
+    .crop-video.is-paused .video-state { opacity: 1; }
+    .video-state .fa-play { display: none; margin-left: 2px; }
+    .crop-video.is-paused .video-state .fa-play { display: inline; }
+    .crop-video.is-paused .video-state .fa-pause { display: none; }
+
+    /* "multiply" makes the video's white background take the page colour,
+       so there is no visible box or edge around it. */
+    .teaser-row video { mix-blend-mode: multiply; }
+
+    /* Dark mode: the figures are drawn on white with black text, so give
+       the whole teaser one soft white panel instead of a hard-edged box. */
+    @media (prefers-color-scheme: dark) {
+      .teaser-row {
+        background: #fff;
+        border-radius: var(--radius);
+        padding: 12px 8px;
+      }
+    }
+
     /* Browsers indent <figure> by 40px on each side by default, which made
        the overview figure 80px narrower than the teaser. Reset it, and let
        every figure image fill its column the way the teaser does. */
@@ -574,7 +645,15 @@
        TEASER
        ========================================================== -->
   <div class="wrap narrow teaser">
-    <img src="./teaser.png" alt="Plant4D reconstructs dense 4D plant growth from two sparse timepoint observations, with skeleton nodes color-coded by tracking identity.">
+    <div class="teaser-row">
+      <div class="teaser-crop crop-input">
+        <img src="./teaser.png" alt="Input pair: sparse point clouds of the plant on Day 1 and Day 10.">
+      </div>
+      <div class="teaser-crop crop-video" id="teaserVideoWrap" title="Click to pause / play">
+        <video id="teaserVideo" src="./teaser.mp4" autoplay muted playsinline preload="auto"
+          aria-label="Plant4D output: the 4D topological skeleton and holistic plant model growing continuously over time, with skeleton nodes color-coded by organ type."></video>
+      </div>
+    </div>
     <p class="caption">
       <b>Dense 4D growth from sparse observations.</b> Our method generates spatio-temporal, dense and holistic 4D plant
       growth from as few as two sparse timepoint observations, tracking correspondences as time progresses — something
@@ -761,6 +840,44 @@
   </footer>
 
   <script>
+    // Teaser video:
+    //  - holds on the last frame for HOLD_MS, then replays from the start
+    //  - click / tap toggles pause and play; a play/pause button shows
+    //    while the mouse is over the video
+    (function () {
+      var HOLD_MS = 1500;   // pause length at the end, in milliseconds
+      var v = document.getElementById('teaserVideo');
+      var wrap = document.getElementById('teaserVideoWrap');
+      if (!v || !wrap) return;
+      var holdTimer = null;
+
+      function setPaused(paused) {
+        wrap.classList.toggle('is-paused', paused);
+        if (paused) {
+          v.pause();
+        } else if (!holdTimer) {          // let the end-hold finish on its own
+          if (v.ended) v.currentTime = 0;
+          v.play().catch(function () {});
+        }
+      }
+
+      v.addEventListener('ended', function () {
+        holdTimer = setTimeout(function () {
+          holdTimer = null;
+          v.currentTime = 0;
+          if (!wrap.classList.contains('is-paused')) v.play().catch(function () {});
+        }, HOLD_MS);
+      });
+
+      wrap.insertAdjacentHTML('beforeend',
+        '<span class="video-state" aria-hidden="true">' +
+        '<i class="fa-solid fa-pause"></i><i class="fa-solid fa-play"></i></span>');
+
+      wrap.addEventListener('click', function () {
+        setPaused(!wrap.classList.contains('is-paused'));
+      });
+    })();
+
     // Copy BibTeX
     document.getElementById('copyBib').addEventListener('click', function () {
       var btn = this;
